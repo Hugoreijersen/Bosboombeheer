@@ -192,3 +192,20 @@ html.kiosk .iconbtn{width:44px;height:44px;}
 html.kiosk .season-pick button{width:44px;height:44px;}
 html.kiosk .theme-toggle{width:50px;height:50px;}
 html.kiosk .wrap{max-width:900px;}
+
+/* ---------- schermtoetsenbord (alleen kiosk, zie js/toetsenbord.js) ---------- */
+.kb{position:fixed;left:0;right:0;bottom:0;z-index:180;display:grid;gap:6px;padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  background:var(--panel-2);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(0,0,0,.18);
+  user-select:none;-webkit-user-select:none;touch-action:manipulation;}
+.kb[hidden]{display:none;}
+.kb-row{display:flex;gap:5px;justify-content:center;}
+.kb-k{flex:1 1 0;min-width:0;max-width:64px;height:52px;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel);color:var(--fg);font:inherit;font-size:1.15rem;padding:0;cursor:pointer;}
+.kb-k:active{background:var(--line);}
+.kb-fn{flex-grow:1.4;max-width:90px;font-size:1rem;color:var(--muted);}
+.kb-fn.on{color:var(--fg);background:var(--line);}
+.kb-space{flex-grow:4;max-width:none;}
+.kb-enter{background:var(--moss);color:#fff;border-color:transparent;}
+.kb-num .kb-k{max-width:none;height:56px;}
+.kb-num .kb-fn{flex-grow:1;}
+html.kb-open body{padding-bottom:300px;}
