@@ -7,7 +7,8 @@
 set -euo pipefail
 OFF="${1:-23:30}"; ON="${2:-07:00}"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
-URL="http://localhost:8090/"
+URL="http://localhost:8090/?kiosk=1"
+HEALTH="http://localhost:8090/api/health"
 
 [ "$(id -u)" != 0 ] || { echo "Draai dit zonder sudo, als de gebruiker van het bureaublad."; exit 1; }
 
@@ -23,7 +24,7 @@ mkdir -p "$HOME/.local/bin"
 cat > "$HOME/.local/bin/bosboom-kiosk" <<EOF
 #!/usr/bin/env bash
 # Wacht tot de app er is, start dan de browser (en opnieuw als hij crasht).
-until curl -fs $URL/api/health >/dev/null; do sleep 2; done
+until curl -fs $HEALTH >/dev/null; do sleep 2; done
 while true; do
   "$BROWSER" $FLAGS "$URL"
   sleep 3

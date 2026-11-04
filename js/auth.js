@@ -46,7 +46,7 @@ async function showClaim(){
     });
     host.appendChild(b);});
 }
-async function startApp(){ await loadAll(); renderAll(); subscribeLive(); const t=location.hash.slice(1); if(tabHooks[t]) tabHooks[t](); authEl.hidden=true; document.getElementById("logoutBtn").hidden=false; }
+async function startApp(){ await loadAll(); renderAll(); subscribeLive(); const t=location.hash.slice(1); if(tabHooks[t]) tabHooks[t](); authEl.hidden=true; document.getElementById("logoutBtn").hidden=scherm.kiosk; }
 
 /* ---- Wachtwoord vergeten / opnieuw instellen ---- */
 const forgotEl=document.getElementById("authForgot");
