@@ -15,6 +15,9 @@ HEALTH="http://localhost:8090/api/health"
 BROWSER="$(command -v chromium || command -v chromium-browser || true)"
 if [ -z "$BROWSER" ]; then sudo apt-get install -y chromium || sudo apt-get install -y chromium-browser; BROWSER="$(command -v chromium || command -v chromium-browser)"; fi
 
+# Emoji-lettertype: zonder dit blijven icoontjes (🏡, 🌙, de streeplijst) leeg op de Pi.
+dpkg -s fonts-noto-color-emoji >/dev/null 2>&1 || sudo apt-get install -y fonts-noto-color-emoji
+
 # Zuinig en zonder pop-ups. Geen vertaal-balk, geen "herstel pagina's", niet terug-swipen.
 FLAGS="--kiosk --noerrdialogs --disable-infobars --no-first-run --disable-session-crashed-bubble \
 --disable-features=Translate,TranslateUI --overscroll-history-navigation=0 --disable-pinch \
