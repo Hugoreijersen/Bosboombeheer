@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # De Bosboom — de Pi laten opstarten in de app, schermvullend (kiosk).
 # Draai als de gewone gebruiker die op het bureaublad inlogt (dus ZONDER sudo):
-#     ./deploy/kiosk.sh            (scherm uit 23:30, aan 07:00)
-#     ./deploy/kiosk.sh 00:00 06:30
+#     ./deploy/kiosk.sh            (scherm uit 01:00, aan 06:30)
+#     ./deploy/kiosk.sh 23:30 07:00
 # Werkt met Raspberry Pi OS met bureaublad (Wayland/labwc of X11), automatisch inloggen aan.
 set -euo pipefail
-OFF="${1:-23:30}"; ON="${2:-07:00}"
+OFF="${1:-01:00}"; ON="${2:-06:30}"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 URL="http://localhost:8090/"
 

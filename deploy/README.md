@@ -30,8 +30,8 @@ Iedere huisgenoot maakt in de app een account en claimt zijn boom, net als voorh
 Als de gewone gebruiker (zonder sudo), op Raspberry Pi OS **met bureaublad**:
 
 ```bash
-./deploy/kiosk.sh              # scherm uit om 23:30, aan om 07:00
-./deploy/kiosk.sh 00:00 06:30  # of zelf kiezen
+./deploy/kiosk.sh              # scherm uit om 01:00, aan om 06:30
+./deploy/kiosk.sh 23:30 07:00  # of zelf kiezen
 sudo raspi-config              # System Options > Boot / Auto Login > Desktop Autologin
 sudo reboot
 ```
