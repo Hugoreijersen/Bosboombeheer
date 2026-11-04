@@ -4,6 +4,7 @@
 async function persistHome(name){
   await db.update("residents",{id:nameToId(name)},{is_home:state.home[name],away_label:state.home[name]?"":(state.away[name]||"")}).catch(showError);
 }
+async function persistPartner(name){ await db.update("residents",{id:nameToId(name)},{partner_home:!!state.partner[name]}).catch(showError); }
 async function persistAway(name,label){ await db.update("residents",{id:nameToId(name)},{away_label:label}).catch(showError); }
 
 // --- eten, schoonmaak, lijsten ---
@@ -27,7 +28,7 @@ const persistQuoteAdd=(text,author)=>idOrNull(db.insert("quotes",{text,author}))
 async function persistQuoteDel(id){ if(id) await db.remove("quotes",{id}).catch(showError); }
 
 // --- alles inladen ---
-function applyResidents(rows){ rows.forEach(r=>{const nm=idToName(r.id);state.home[nm]=r.is_home;state.away[nm]=r.away_label||"";}); }
+function applyResidents(rows){ rows.forEach(r=>{const nm=idToName(r.id);state.home[nm]=r.is_home;state.away[nm]=r.away_label||"";state.partner[nm]=!!r.partner_home;}); }
 async function loadAll(){
   const [res,meals,notes,ch,sh,rec,q]=await Promise.all([
     db.list("residents",{order:"sort"}),

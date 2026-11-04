@@ -57,11 +57,6 @@ section{margin-top:28px;}
 .tree-name{font-weight:700;font-size:1.05rem;}
 .status-pill{font-size:.76rem;font-weight:700;padding:4px 12px;border-radius:999px;color:#fff;background:var(--home-glow);border:0;}
 .tree-card.berk-has-mandarijn{padding-top:16px;}
-.mandarin-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;margin-top:2px;padding:6px 8px;border-radius:10px;border:1px solid var(--amber);background:var(--amber-soft);color:var(--amber);text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.04);width:78px;max-width:100%;}
-.mandarin-box.on{border-color:var(--moss);background:var(--moss-soft);color:var(--moss);}
-.mandarin-fruit{display:block;}
-.mandarin-label{font-size:.62rem;font-weight:800;line-height:1.1;}
-.mandarin-status{font-size:.72rem;font-weight:800;line-height:1.1;}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .status-pill{color:#10210f;}}
 :root[data-theme="dark"] .status-pill{color:#10210f;}
 input.away{width:100%;max-width:120px;font-family:inherit;font-size:.78rem;font-weight:700;text-align:center;color:var(--rust);background:var(--rust-soft);border:1px solid transparent;border-radius:999px;padding:4px 10px;}
