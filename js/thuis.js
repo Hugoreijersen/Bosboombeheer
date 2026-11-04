@@ -19,6 +19,23 @@ function tree(kind,c,season){
   return `<svg width="58" height="68" viewBox="0 0 64 76" aria-hidden="true">${content}</svg>`;}
 
 const treesEl=document.getElementById("trees");
+const mandarinKey="bosboom-mandarijn-home";
+function getMandarinHome(){
+  try{
+    const value=localStorage.getItem(mandarinKey);
+    return value === "1" || value === "true";
+  }catch(e){
+    return false;
+  }
+}
+function setMandarinHome(next){
+  state.home.Mandarijn = Boolean(next);
+  try{localStorage.setItem(mandarinKey, next ? "1" : "0");}catch(e){}
+}
+function toggleMandarinHome(){
+  setMandarinHome(!state.home.Mandarijn);
+  renderTrees();
+}
 function toggleHome(name){ if(state.home[name]){state.home[name]=false;state.away[name]="";} else {state.home[name]=true;} renderTrees(); persistHome(name); }
 function renderTrees(){
   treesEl.innerHTML="";
@@ -32,6 +49,16 @@ function renderTrees(){
       ["click","mousedown","keydown"].forEach(ev=>inp.addEventListener(ev,e=>e.stopPropagation()));
       inp.addEventListener("input",()=>state.away[p.name]=inp.value);
       inp.addEventListener("change",()=>persistAway(p.name,inp.value));card.appendChild(inp);}
+    if(p.name==="Berk"){
+      const mandarinBox=document.createElement("div");
+      mandarinBox.className=`mandarin-box${state.home.Mandarijn ? " on" : ""}`;
+      mandarinBox.innerHTML=`<div class="mandarin-label">Mandarijn</div><div class="mandarin-status">${state.home.Mandarijn ? "thuis" : "weg"}</div>`;
+      mandarinBox.addEventListener("click",e=>{e.stopPropagation();toggleMandarinHome();});
+      mandarinBox.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();toggleMandarinHome();}});
+      mandarinBox.setAttribute("role","button");mandarinBox.tabIndex=0;mandarinBox.setAttribute("aria-pressed",String(state.home.Mandarijn));
+      card.appendChild(mandarinBox);
+    }
     treesEl.appendChild(card);});
 }
+state.home.Mandarijn = getMandarinHome();
 renderTrees();
