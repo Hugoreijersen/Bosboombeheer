@@ -31,6 +31,8 @@ const db = (() => {
   function toError(e) {
     const msg = (e && e.message) || String(e);
     const code = CODES.find((c) => msg.includes(c))
+      || (msg.includes("dib_geen_overlap") ? "dib_bezet" : null)
+      || (msg.includes("kring_geen_overlap") ? "huis_geclaimd" : null)
       || (e && e.code === "23P01" ? "overlap" : null)          // exclusion constraint
       || (e && e.code === "23505" ? "bestaat_al" : null)
       || (e && e.code === "42501" ? "geen_toegang" : null)

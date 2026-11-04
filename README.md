@@ -1,20 +1,32 @@
 # De Bosboom
 
 Een huis-dashboard voor De Bosboom (Iep, Berk, Eik): wie is thuis, wie eet mee,
-wie kookt, het schoonmaakrooster, boodschappen, recepten en quotes — met seizoenen
-en weer. De app werkt op telefoon en op een vast touchscreen in huis, en deelt alles
+wie kookt, de agenda (kring of huisavond), dibs op de wasmachine, de streeplijst,
+DeeldeDuit (kosten delen), het schoonmaakrooster, boodschappen, recepten, quotes en
+statistieken — met seizoenen en weer. De app werkt op telefoon en op een vast touchscreen in huis, en deelt alles
 live tussen alle apparaten.
 
 ## Hoe het in elkaar zit
 
 ```
-index.html                     de hele app (1 bestand: HTML + CSS + JavaScript)
+index.html                     de opmaak van alle schermen
+css/base.css                   kleuren, lettertypes en de oorspronkelijke secties
+css/huis.css                   agenda, dibs, streeplijst, DeeldeDuit, statistieken
+js/core.js                     bewoners, datums, state, hulpjes (eerst geladen)
+js/rules.js                    de huisregels als gewone functies (geld, kring, dibs)
+js/db.js                       de ENIGE plek die met de backend praat
+js/app.js                      inladen, opslaan, live bijwerken
+js/thuis.js eten.js schoonmaak.js lijsten.js sfeer.js    de oorspronkelijke secties
+js/agenda.js dibs.js streep.js duit.js stats.js          de nieuwe secties
+js/auth.js                     login en boom claimen; start de app (laatst geladen)
 sql/01_schema.sql              de database-tabellen + startdata
 sql/02_auth_and_policies.sql   login-koppeling + toegangsregels (security)
+sql/03_huispot_features.sql    tabellen en regels voor de nieuwe secties
+tests/                         node tests/rules.test.js  (en tests/sql.test.mjs)
 ```
 
-Er is bewust **geen build-stap en geen framework**. `index.html` is een gewone
-statische pagina. De "backend" is **Supabase** (gehoste database + login + realtime);
+Er is bewust **geen build-stap en geen framework**. Het zijn gewone statische
+bestanden; de scripts worden in vaste volgorde geladen (zie onderaan `index.html`). De "backend" is **Supabase** (gehoste database + login + realtime);
 de app praat daar rechtstreeks mee vanuit de browser.
 
 ## Hoe het werkt (in het kort)
@@ -30,6 +42,29 @@ de app praat daar rechtstreeks mee vanuit de browser.
 De belangrijkste code zit onderaan in `index.html`, in het blok
 `SUPABASE LIVE-LAAG`. Daarboven staat de UI (overgenomen uit het ontwerp).
 
+## Huisregels
+
+- **Agenda:** een *kring* claimt het huis. Er kan dan niets anders gepland worden en
+  niemand kan zich aanmelden. Een *huisavond* of *activiteit* is open: iedereen geeft
+  aan of hij erbij is, en ze mogen naast elkaar bestaan.
+- **Dibs:** een ding (wasmachine, droger) kan nooit twee keer tegelijk geclaimd zijn,
+  nu of later. "Klaar" geeft het meteen vrij.
+- **Streeplijst:** iedereen mag voor iedereen strepen (zoals op de koelkast). De prijs
+  ligt vast op het moment van strepen. Afrekenen zet de open strepen in DeeldeDuit.
+- **DeeldeDuit:** alles in hele centen; de overgebleven centen gaan naar de grootste rest,
+  zodat elk scherm precies hetzelfde rekent. Afrekenen maakt zo min mogelijk overboekingen.
+  Afgerekende uitgaven zijn alleen-lezen; terugdraaien kan zolang er niets betaald is.
+
+De regels staan in `js/rules.js` (snelle melding in de app) én in de database
+(`sql/03`), zodat ook twee telefoons tegelijk ze niet kunnen omzeilen.
+
+## Andere backend?
+
+Alles wat met de backend praat staat in `js/db.js`, met bovenaan het contract
+(`list`, `insert`, `update`, `upsert`, `remove`, `call`, `subscribe`, `auth`).
+Wil je bv. naar PocketBase op de Pi, dan vervang je dat ene bestand en zet je de
+regels uit `sql/03` in de server (`js/rules.js` kan daar hergebruikt worden).
+
 ## De database-tabellen
 
 | Tabel        | Waarvoor                                        |
@@ -43,6 +78,11 @@ De belangrijkste code zit onderaan in `index.html`, in het blok
 | `quotes`     | quotes                                          |
 | `plans`      | weekendplannen (per dag per persoon)            |
 | `profiles`   | koppeling ingelogde gebruiker → boom            |
+| `chore_log`  | logboek: wie maakte wanneer wat schoon          |
+| `events`, `event_rsvp` | agenda + wie er komt                  |
+| `dib_items`, `dib_claims` | dingen om te dibsen + claims       |
+| `turf_items`, `turf_marks`, `turf_settlements` | streeplijst   |
+| `expenses`, `expense_shares`, `settlements`, `settlement_transfers` | DeeldeDuit |
 
 ## Sleutels & veiligheid
 
@@ -55,7 +95,7 @@ De belangrijkste code zit onderaan in `index.html`, in het blok
 ## Deployen (Cloudflare Pages)
 
 Twee manieren:
-- **Snel:** upload `index.html` direct in Cloudflare Pages (drag & drop).
+- **Snel:** upload de hele map (index.html, css/, js/, iconen) in Cloudflare Pages (drag & drop).
 - **Netjes (aanbevolen):** koppel deze GitHub-repo aan Cloudflare Pages. Dan gaat
   elke `git push` automatisch live. Framework preset: **None**. Build command: leeg.
   Output directory: `/` (de map met `index.html`).
@@ -66,4 +106,6 @@ Twee manieren:
 - **Pass 2a (klaar):** login + boom-claim + data inladen + "Wie is thuis?" live.
 - **Pass 2b (volgt):** de overige secties (eten, schoonmaak, boodschappen,
   recepten, quotes, plannen) ook live opslaan.
+- **Pass 3 (deze stap):** bestanden opgesplitst, data-laag, Agenda, Dibs, Streeplijst,
+  DeeldeDuit en statistieken. Draai eerst `sql/03_huispot_features.sql` in Supabase.
 - **Later:** live weer (Open-Meteo), PWA (installeren op telefoon), kiosk op het touchscreen.
