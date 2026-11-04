@@ -12,3 +12,4 @@ wrangler.jsonc
 .assetsignore
 .wrangler
 .gitignore
+deploy
