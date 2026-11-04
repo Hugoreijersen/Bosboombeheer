@@ -106,6 +106,25 @@ De Supabase-SQL in `sql/` is de specificatie die `pb_migrations/` en `pb_hooks/`
 - Het **beheer-account** (PocketBase `/_/`) en de database (`/opt/bosboom/pb_data` op de Pi)
   staan NIET in deze repo en horen dat ook nooit te doen.
 
+## Wijzigingen bekijken vóór je pusht
+
+Draai de app op je eigen computer, met dezelfde PocketBase als de Pi maar een eigen
+test-database. Eenmalig: installeer [Git](https://git-scm.com/downloads) en clone de repo
+(in VS Code: *Clone Git Repository*). Daarna, in de terminal van VS Code in de map van de repo:
+
+| Computer | Starten | Opnieuw beginnen met lege database |
+|---|---|---|
+| Mac / Linux | `./dev.sh` | `./dev.sh --reset` |
+| Windows (PowerShell) | `powershell -ExecutionPolicy Bypass -File .\dev.ps1` | `... -File .\dev.ps1 -Reset` |
+
+De eerste keer downloadt hij PocketBase (± 15 MB, gecontroleerd met een checksum).
+Open dan **http://localhost:8090/** (of `/?kiosk=1` voor de kiosk; in Chrome met F12 en
+de apparaatknop op 480 x 800 zie je het staande scherm). Maak een account en claim een boom.
+
+- html, css of js gewijzigd: browser herladen.
+- `pb_hooks/` of `pb_migrations/` gewijzigd: Ctrl+C en opnieuw starten.
+- Testen: `node tests/rules.test.js` en `PB_BIN=~/.cache/bosboom-dev/pocketbase node tests/pb.test.mjs` (Node nodig).
+
 ## Draaien op de Raspberry Pi
 
 Zie **[deploy/README.md](deploy/README.md)**: in het kort `sudo ./deploy/install.sh`
