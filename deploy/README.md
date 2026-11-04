@@ -36,6 +36,9 @@ sudo raspi-config              # System Options > Boot / Auto Login > Desktop Au
 sudo reboot
 ```
 
+**Staand scherm:** `./deploy/rotate.sh 90` (of `270` als hij op zijn kop staat, `0` = terug).
+Dat draait het scherm én de touch mee, en blijft na een herstart.
+
 De browser (Chromium) start schermvullend in de app en herstart vanzelf als hij crasht.
 's Nachts gaat het scherm uit; dat scheelt het meeste stroom. Handmatig: `deploy/screen.sh off` / `on`.
 
