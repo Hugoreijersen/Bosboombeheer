@@ -65,7 +65,8 @@
   function renderSub(){
     const me=myResidentId,v=me?(balances()[me]||0):0;
     const owe=S.transfers.filter(t=>!t.paid_at&&t.from_id===me).reduce((s,t)=>s+t.amount_cents,0);
-    sub.className="sub "+(owe||v<0?"neg":v>0?"pos":"");
+    sub.className="view-sub "+(owe||v<0?"neg":v>0?"pos":"");
+    document.getElementById("duitBadge").hidden=!(owe||v<0);
     sub.textContent=owe?`Nog over te maken: ${rules.euro(owe)}`:v>0?`Jij krijgt ${rules.euro(v)}`:v<0?`Jij betaalt ${rules.euro(-v)}`:"Alles verrekend";
   }
   function render(force){
@@ -115,7 +116,6 @@
   async function paid(id,on){try{await db.call("mark_transfer_paid",{p_transfer:id,p_paid:on});await load();render(true);}catch(e){showError(e);}}
   async function undo(id){try{await db.call("undo_settlement",{p_settlement:id});await load();render(true);}catch(e){showError(e);}}
 
-  document.getElementById("openDuit").addEventListener("click",()=>openPage("page-duit"));
-  pageHooks["page-duit"]=async()=>{render(true);await load();render(true);};
+  tabHooks.duit=async()=>{render(true);await load();render(true);};
   registerModule({name:"duit",tables:["expenses","expense_shares","settlements","settlement_transfers"],load,render});
 })();

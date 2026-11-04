@@ -10,3 +10,5 @@ README.md
 CLAUDE.md
 wrangler.jsonc
 .assetsignore
+.wrangler
+.gitignore

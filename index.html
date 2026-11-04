@@ -24,109 +24,133 @@
   <button data-s="winter" aria-label="Winter">❄️</button>
 </div>
 <button class="theme-toggle" id="themeBtn" aria-label="Wissel licht/donker">🌙</button>
-<button class="logout" id="logoutBtn" hidden>Uitloggen</button>
 
-<div class="wrap">
-  <header>
-    <div class="crest"><i></i></div>
-    <h1 class="brand">De <em>Bosboom</em></h1>
-    <div class="critter" aria-hidden="true"><svg width="62" height="40" viewBox="0 0 62 40">
-      <ellipse cx="34" cy="28" rx="20" ry="11" fill="#6f5338"/>
-      <g fill="#4e3a26"><path d="M18 28 L22 12 L26 26 Z"/><path d="M26 27 L31 10 L35 25 Z"/><path d="M34 26 L40 11 L44 26 Z"/><path d="M42 27 L48 14 L51 28 Z"/></g>
-      <circle cx="13" cy="29" r="7.5" fill="#caa981"/>
-      <circle cx="7.6" cy="30.4" r="1.7" fill="#2a2018"/>
-      <circle cx="11" cy="26.6" r="1.2" fill="#2a2018"/>
-      <ellipse cx="34" cy="38" rx="17" ry="2.2" fill="rgba(0,0,0,.12)"/>
-    </svg></div>
-  </header>
+<main class="wrap">
+  <div class="view" data-view="huis">
+    <header>
+      <div class="crest"><i></i></div>
+      <h1 class="brand">De <em>Bosboom</em></h1>
+      <div class="critter" aria-hidden="true"><svg width="62" height="40" viewBox="0 0 62 40">
+        <ellipse cx="34" cy="28" rx="20" ry="11" fill="#6f5338"/>
+        <g fill="#4e3a26"><path d="M18 28 L22 12 L26 26 Z"/><path d="M26 27 L31 10 L35 25 Z"/><path d="M34 26 L40 11 L44 26 Z"/><path d="M42 27 L48 14 L51 28 Z"/></g>
+        <circle cx="13" cy="29" r="7.5" fill="#caa981"/>
+        <circle cx="7.6" cy="30.4" r="1.7" fill="#2a2018"/>
+        <circle cx="11" cy="26.6" r="1.2" fill="#2a2018"/>
+        <ellipse cx="34" cy="38" rx="17" ry="2.2" fill="rgba(0,0,0,.12)"/>
+      </svg></div>
+    </header>
+    <div class="banner" id="kringBanner" hidden></div>
 
-  <div class="banner" id="kringBanner" hidden></div>
+    <section>
+      <div class="sec-head"><h2 class="sec-title">Wie is thuis?</h2></div>
+      <div class="trees" id="trees"></div>
+    </section>
 
-  <section>
-    <div class="sec-head"><h2 class="sec-title">Wie is thuis?</h2></div>
-    <div class="trees" id="trees"></div>
-  </section>
+    <section>
+      <div class="sec-head">
+        <h2 class="sec-title" id="etenTitle">Vandaag</h2>
+        <div class="seg" role="tablist">
+          <button id="segDay" role="tab" aria-selected="true">Dag</button>
+          <button id="segWeek" role="tab" aria-selected="false">Week</button>
+        </div>
+      </div>
+      <div class="card">
+        <div id="paneDay"></div>
+        <div id="paneWeek" hidden></div>
+      </div>
+    </section>
 
-  <section>
-    <div class="sec-head"><h2 class="sec-title">Weer</h2></div>
-    <div class="card weather" id="weather"></div>
-  </section>
+    <section>
+      <div class="sec-head"><h2 class="sec-title">Agenda</h2></div>
+      <div class="card" id="agenda"></div>
+    </section>
 
-  <section>
-    <div class="sec-head">
-      <h2 class="sec-title" id="etenTitle">Vandaag</h2>
-      <div class="seg" role="tablist">
-        <button id="segDay" role="tab" aria-selected="true">Dag</button>
-        <button id="segWeek" role="tab" aria-selected="false">Week</button>
+    <section>
+      <div class="sec-head"><h2 class="sec-title">Weer</h2></div>
+      <div class="card weather" id="weather"></div>
+    </section>
+
+    <section>
+      <div class="sec-head"><h2 class="sec-title">Quote van de dag</h2></div>
+      <div class="card">
+        <div id="qotd"></div>
+        <button class="addbtn" id="toggleHist">Alle quotes</button>
+        <div id="histWrap" hidden>
+          <div class="addrow"><input class="txt" id="qText" type="text" placeholder="Quote…" style="flex:2"><input class="txt" id="qBy" type="text" placeholder="Van wie?" style="flex:1;min-width:90px"><button id="qAdd">Toevoegen</button></div>
+          <div id="quoteList"></div>
+        </div>
+      </div>
+    </section>
+
+    <p class="concept-note"><span id="liveNote">LIVE — alles wordt live gedeeld</span></p>
+  </div>
+
+  <div class="view" data-view="praktisch" hidden>
+    <h2 class="view-title">Praktisch</h2>
+    <section>
+      <div class="sec-head"><h2 class="sec-title">Huistaken</h2></div>
+      <div class="card"><div id="chores"></div></div>
+    </section>
+
+    <section>
+      <div class="sec-head"><h2 class="sec-title">Dibs</h2></div>
+      <div class="card" id="dibs"></div>
+    </section>
+
+    <section>
+      <div class="sec-head"><h2 class="sec-title">Boodschappen</h2></div>
+      <div class="card">
+        <div class="addrow"><input class="txt" id="shopInput" type="text" placeholder="Wat is er nodig?"><button id="shopAdd">Toevoegen</button></div>
+        <div id="shopList"></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-head"><h2 class="sec-title">Streeplijst</h2></div>
+      <div class="card" id="streep"></div>
+    </section>
+
+    <section>
+      <div class="sec-head"><h2 class="sec-title">Recepten</h2></div>
+      <div class="card">
+        <div id="recipeList"></div>
+        <div class="recipe-form" id="recipeForm" hidden>
+          <div class="rf-top"><input class="txt" id="rfTitle" type="text" placeholder="Naam van het recept"><input class="txt rf-time" id="rfTime" type="text" inputmode="numeric" placeholder="min"></div>
+          <div><label for="rfIng">Ingrediënten (één per regel)</label><textarea class="txt" id="rfIng" placeholder="200 g pasta&#10;1 bol mozzarella&#10;…"></textarea></div>
+          <div><label for="rfSteps">Bereidingswijze</label><textarea class="txt" id="rfSteps" placeholder="Stap voor stap…"></textarea></div>
+          <div class="rf-actions"><button class="formbtn" id="rfSave">Opslaan</button><button class="ghostbtn" id="rfCancel">Annuleren</button></div>
+        </div>
+        <button class="addbtn" id="addRecipe">+ Recept</button>
+      </div>
+    </section>
+    <p class="concept-note"><button class="ghostbtn" id="logoutBtn" hidden>Uitloggen</button></p>
+  </div>
+
+  <div class="view" data-view="duit" hidden>
+    <div class="page-head"><div><h2 class="view-title">DeeldeDuit</h2><span class="view-sub" id="duitSub"></span></div></div>
+    <div id="duit"></div>
+  </div>
+
+  <div class="view" data-view="stats" hidden>
+    <div class="page-head"><h2 class="view-title">Statistieken</h2>
+      <div class="seg" role="tablist" id="statPeriod">
+        <button data-p="week" role="tab" aria-selected="false">Week</button>
+        <button data-p="maand" role="tab" aria-selected="true">Maand</button>
+        <button data-p="jaar" role="tab" aria-selected="false">Jaar</button>
       </div>
     </div>
-    <div class="card">
-      <div id="paneDay"></div>
-      <div id="paneWeek" hidden></div>
-    </div>
-  </section>
+    <div id="stats"></div>
+  </div>
+</main>
 
-  <section class="linkrow">
-    <button class="linkcard" id="openDuit"><span><span class="t">DeeldeDuit</span><span class="sub" id="duitSub">Kosten delen</span></span><span class="arw">→</span></button>
-    <button class="linkcard" id="openStats"><span><span class="t">Statistieken</span><span class="sub">Wie kookt het vaakst?</span></span><span class="arw">→</span></button>
-  </section>
+<nav class="tabbar" aria-label="Menu">
+  <button data-tab="huis"><span class="ti">🏡</span><span>Huis</span></button>
+  <button data-tab="praktisch"><span class="ti">🧺</span><span>Praktisch</span></button>
+  <button data-tab="duit"><span class="ti">💶</span><span>DeeldeDuit</span><i class="badge" id="duitBadge" hidden></i></button>
+  <button data-tab="stats"><span class="ti">📊</span><span>Statistieken</span></button>
+</nav>
 
-  <section>
-    <div class="sec-head"><h2 class="sec-title">Agenda</h2></div>
-    <div class="card" id="agenda"></div>
-  </section>
-
-  <section>
-    <div class="sec-head"><h2 class="sec-title">Dibs</h2></div>
-    <div class="card" id="dibs"></div>
-  </section>
-
-  <section>
-    <div class="sec-head"><h2 class="sec-title">Streeplijst</h2></div>
-    <div class="card" id="streep"></div>
-  </section>
-
-  <section>
-    <div class="sec-head"><h2 class="sec-title">Schoonmaak</h2></div>
-    <div class="card"><div id="chores"></div></div>
-  </section>
-
-  <section>
-    <div class="sec-head"><h2 class="sec-title">Boodschappen</h2></div>
-    <div class="card">
-      <div class="addrow"><input class="txt" id="shopInput" type="text" placeholder="Wat is er nodig?"><button id="shopAdd">Toevoegen</button></div>
-      <div id="shopList"></div>
-    </div>
-  </section>
-
-  <section>
-    <div class="sec-head"><h2 class="sec-title">Recepten</h2></div>
-    <div class="card">
-      <div id="recipeList"></div>
-      <div class="recipe-form" id="recipeForm" hidden>
-        <div class="rf-top"><input class="txt" id="rfTitle" type="text" placeholder="Naam van het recept"><input class="txt rf-time" id="rfTime" type="text" inputmode="numeric" placeholder="min"></div>
-        <div><label for="rfIng">Ingrediënten (één per regel)</label><textarea class="txt" id="rfIng" placeholder="200 g pasta&#10;1 bol mozzarella&#10;…"></textarea></div>
-        <div><label for="rfSteps">Bereidingswijze</label><textarea class="txt" id="rfSteps" placeholder="Stap voor stap…"></textarea></div>
-        <div class="rf-actions"><button class="formbtn" id="rfSave">Opslaan</button><button class="ghostbtn" id="rfCancel">Annuleren</button></div>
-      </div>
-      <button class="addbtn" id="addRecipe">+ Recept</button>
-    </div>
-  </section>
-
-  <section>
-    <div class="sec-head"><h2 class="sec-title">Quote van de dag</h2></div>
-    <div class="card">
-      <div id="qotd"></div>
-      <button class="addbtn" id="toggleHist">Alle quotes</button>
-      <div id="histWrap" hidden>
-        <div class="addrow"><input class="txt" id="qText" type="text" placeholder="Quote…" style="flex:2"><input class="txt" id="qBy" type="text" placeholder="Van wie?" style="flex:1;min-width:90px"><button id="qAdd">Toevoegen</button></div>
-        <div id="quoteList"></div>
-      </div>
-    </div>
-  </section>
-
-  <p class="concept-note"><span id="liveNote">LIVE — alles wordt live gedeeld</span></p>
-</div>
+<div class="modal" id="modal" hidden><div class="modal-card" role="dialog" aria-modal="true"></div></div>
 
 <!-- Login / claim overlay -->
 <div class="auth" id="auth">
@@ -155,33 +179,16 @@
   </div>
 </div>
 
-<div class="page" id="page-stats" hidden><div class="page-inner">
-  <button class="backbtn" data-close="1">← Terug</button>
-  <div class="page-head"><h2>Statistieken</h2>
-    <div class="seg" role="tablist" id="statPeriod">
-      <button data-p="week" role="tab" aria-selected="false">Week</button>
-      <button data-p="maand" role="tab" aria-selected="true">Maand</button>
-      <button data-p="jaar" role="tab" aria-selected="false">Jaar</button>
-    </div>
-  </div>
-  <div id="stats"></div>
-</div></div>
-
-<div class="page" id="page-duit" hidden><div class="page-inner">
-  <button class="backbtn" data-close="1">← Terug</button>
-  <div class="page-head"><h2>DeeldeDuit</h2></div>
-  <div id="duit"></div>
-</div></div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="js/core.js"></script>
 <script src="js/rules.js"></script>
 <script src="js/db.js"></script>
+<script src="js/tabs.js"></script>
+<script src="js/kookkosten.js"></script>
 <script src="js/thuis.js"></script>
 <script src="js/eten.js"></script>
 <script src="js/schoonmaak.js"></script>
 <script src="js/lijsten.js"></script>
-<script src="js/pages.js"></script>
 <script src="js/agenda.js"></script>
 <script src="js/dibs.js"></script>
 <script src="js/streep.js"></script>
