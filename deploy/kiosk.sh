@@ -3,6 +3,7 @@
 # Draai als de gewone gebruiker die op het bureaublad inlogt (dus ZONDER sudo):
 #     ./deploy/kiosk.sh            (scherm uit 01:00, aan 06:30)
 #     ./deploy/kiosk.sh 23:30 07:00
+#     LICHT=1 ./deploy/kiosk.sh   (lichtere browser Cog/WPE in plaats van Chromium, voor de Pi 3)
 # Werkt met Raspberry Pi OS met bureaublad (Wayland/labwc of X11), automatisch inloggen aan.
 set -euo pipefail
 OFF="${1:-01:00}"; ON="${2:-06:30}"
@@ -13,8 +14,14 @@ HEALTH="http://localhost:8090/api/health"
 [ "$(uname -s)" = Linux ] || { echo "Dit script is voor de Raspberry Pi. Log eerst in op de Pi (ssh) en draai het daar."; exit 1; }
 [ "$(id -u)" != 0 ] || { echo "Draai dit zonder sudo, als de gebruiker van het bureaublad."; exit 1; }
 
-BROWSER="$(command -v chromium || command -v chromium-browser || true)"
-if [ -z "$BROWSER" ]; then sudo apt-get install -y chromium || sudo apt-get install -y chromium-browser; BROWSER="$(command -v chromium || command -v chromium-browser)"; fi
+if [ "${LICHT:-0}" = 1 ]; then
+  # Cog (WPE WebKit): een browser gemaakt voor kiosks op kleine apparaten, veel lichter dan Chromium
+  command -v cog >/dev/null || sudo apt-get install -y cog
+  BROWSER="$(command -v cog)"
+else
+  BROWSER="$(command -v chromium || command -v chromium-browser || true)"
+  if [ -z "$BROWSER" ]; then sudo apt-get install -y chromium || sudo apt-get install -y chromium-browser; BROWSER="$(command -v chromium || command -v chromium-browser)"; fi
+fi
 
 # Emoji-lettertype: zonder dit blijven icoontjes (🏡, 🌙, de streeplijst) leeg op de Pi.
 dpkg -s fonts-noto-color-emoji >/dev/null 2>&1 || sudo apt-get install -y fonts-noto-color-emoji
@@ -50,8 +57,12 @@ else export DISPLAY="\${DISPLAY:-:0}"; PLATFORM=--ozone-platform=x11; fi
 LOG="\$HOME/.cache/bosboom-kiosk.log"; mkdir -p "\$(dirname "\$LOG")"
 while true; do
   start=\$(date +%s)
-  echo "\$(date '+%F %T') start (\$PLATFORM)" >> "\$LOG"
-  "$BROWSER" $FLAGS \$PLATFORM --user-data-dir="\$PROFILE" "$URL" >> "\$LOG" 2>&1
+  echo "\$(date '+%F %T') start $(basename "$BROWSER") (\$PLATFORM)" >> "\$LOG"
+  if [ "$(basename "$BROWSER")" = cog ]; then
+    COG_PLATFORM_WL_VIEW_FULLSCREEN=1 "$BROWSER" --platform=wl "$URL" >> "\$LOG" 2>&1
+  else
+    "$BROWSER" $FLAGS \$PLATFORM --user-data-dir="\$PROFILE" "$URL" >> "\$LOG" 2>&1
+  fi
   tail -n 500 "\$LOG" > "\$LOG.tmp" && mv "\$LOG.tmp" "\$LOG"
   # Stopte hij binnen 10 seconden? Niet blijven herstarten, eerst even wachten.
   if [ \$(( \$(date +%s) - start )) -lt 10 ]; then sleep 30; else sleep 3; fi
