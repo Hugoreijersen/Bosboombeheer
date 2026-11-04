@@ -13,15 +13,15 @@ function editorHTML(where){const{off,d}=ctx(where);const wk=W(off);
   return h;}
 function footHTML(where){const{off,d}=ctx(where);const wk=W(off);const t=totalDay(wk,d),g=guestsDay(wk,d),ks=cooksDay(wk,d);
   const notes=(wk.dayNotes[d]||[]).map((nt,ix)=>`<span class="note"><span class="nt"><b style="color:${colorOf(nt.by)}">${esc(nt.by)}:</b> ${esc(nt.text)}</span><button class="note-x" data-delnote="${ix}" aria-label="Verwijder">✕</button></span>`).join("");
-  return `<div class="foot-sum"><b>${t}</b> aan tafel${g?` (incl. ${g} ${g===1?"gast":"gasten"})`:""} · ${ks.length?`<span class="cooks">${ks.join(" & ")}</span> ${ks.length>1?"koken":"kookt"}`:"nog geen kok"}${where==="day"?` · deadline 17:00`:""}</div>${notes}`;}
+  return `<div class="foot-sum"><b>${t}</b> aan tafel${g?` (incl. ${g} ${g===1?"gast":"gasten"})`:""} · ${ks.length?`<span class="cooks">${ks.join(" & ")}</span> ${ks.length>1?"koken":"kookt"}`:"nog geen kok"}${where==="day"?` · deadline 17:00`:""}</div>${cookCost.footHTML(off,d,ks)}${notes}`;}
 function hostOf(where){return where==="day"?document.getElementById("paneDay"):document.getElementById("edWeekHost");}
 function renderEditor(where){const c=hostOf(where);if(!c)return;c.innerHTML=editorHTML(where);document.getElementById("ft-"+where).innerHTML=footHTML(where);bindEditor(where,c);bindFoot(where);}
-function bindFoot(where){const el=document.getElementById("ft-"+where);if(!el)return;el.querySelectorAll("[data-delnote]").forEach(b=>b.addEventListener("click",()=>{const{off,d}=ctx(where);const arr=W(off).dayNotes[d];const nt=arr[+b.dataset.delnote];if(nt)persistNoteDel(nt.id);arr.splice(+b.dataset.delnote,1);refreshFooters();}));}
+function bindFoot(where){const el=document.getElementById("ft-"+where);if(!el)return;cookCost.bind(el,where);el.querySelectorAll("[data-delnote]").forEach(b=>b.addEventListener("click",()=>{const{off,d}=ctx(where);const arr=W(off).dayNotes[d];const nt=arr[+b.dataset.delnote];if(nt)persistNoteDel(nt.id);arr.splice(+b.dataset.delnote,1);refreshFooters();}));}
 function refreshFooters(){["day","week"].forEach(w=>{const el=document.getElementById("ft-"+w);if(el){el.innerHTML=footHTML(w);bindFoot(w);}});}
 function bindEditor(where,container){const g=()=>ctx(where);
   container.querySelectorAll(".stbtns").forEach((grp,idx)=>{const name=people[idx].name;
     grp.querySelectorAll("button").forEach(btn=>btn.addEventListener("click",()=>{const{off,d}=g();const wk=W(off);
-      wk.status[name][d]=wk.status[name][d]===btn.dataset.st?"":btn.dataset.st;changed(where,"status");persistMeal(name,off,d);}));});
+      wk.status[name][d]=wk.status[name][d]===btn.dataset.st?"":btn.dataset.st;changed(where,"status");persistMeal(name,off,d);if(wk.status[name][d]==="kookt")cookCost.ask(name,off,d);}));});
   container.querySelectorAll(".gnum").forEach(inp=>inp.addEventListener("input",()=>{const{off,d}=g();let v=parseInt(inp.value,10);if(isNaN(v)||v<0)v=0;W(off).guests[inp.dataset.p][d]=v;changed(where,"guest");persistMeal(inp.dataset.p,off,d);}));
   const addBtn=document.getElementById("nqadd-"+where),txt=document.getElementById("nq-"+where),who=document.getElementById("nqw-"+where);
   const doAdd=async()=>{const v=txt.value.trim();if(!v)return;const{off,d}=g();const author=who.value;const note={text:v,by:author};W(off).dayNotes[d].push(note);txt.value="";refreshFooters();note.id=await persistNoteAdd(off,d,author,v);};

@@ -15,7 +15,7 @@ alter default privileges in schema public grant all on functions to authenticate
 alter default privileges in schema public grant all on sequences to authenticated, anon;
 create publication supabase_realtime;
 insert into auth.users values ('00000000-0000-0000-0000-000000000001');`);
-for(const f of ['01_schema.sql','02_auth_and_policies.sql','03_huispot_features.sql','03_huispot_features.sql']) { await db.exec(fs.readFileSync(R+f,'utf8')); console.log('ran',f); }
+for(const f of ['01_schema.sql','02_auth_and_policies.sql','03_huispot_features.sql','03_huispot_features.sql','04_eten_kosten.sql','04_eten_kosten.sql']) { await db.exec(fs.readFileSync(R+f,'utf8')); console.log('ran',f); }
 await db.exec(`insert into profiles values ('00000000-0000-0000-0000-000000000001','iep');`);
 const as=async(sql,params)=>{ await db.exec(`begin; set local role authenticated; set local request.jwt.claim.sub='00000000-0000-0000-0000-000000000001';`);
   try{ const r=await db.query(sql,params); await db.exec('commit'); return r.rows; } catch(e){ await db.exec('rollback'); return 'ERR '+e.message; } };
@@ -54,4 +54,7 @@ await show('insert settled transfer',`insert into settlement_transfers(settlemen
 await show('paid',`select mark_transfer_paid(id,true) from settlement_transfers limit 1`);
 await show('undo after paid',`select undo_settlement(id) from settlements`);
 await show('chore log add',`insert into chore_log(chore_id,task,done_by) values ('wc','WC','eik') returning done_by`);
+await show('kookkosten',`select save_expense(null,'Eten',2340,'betaald','eik','2026-11-04',$1::jsonb,'2026-11-04') is not null as ok`,[JSON.stringify([{resident_id:'eik',shares:1},{resident_id:'iep',shares:3}])]);
+await show('kookkosten 2x zelfde dag',`select save_expense(null,'Eten',100,'betaald','eik','2026-11-04',$1::jsonb,'2026-11-04')`,[JSON.stringify([{resident_id:'eik',shares:1}])]);
+await show('kookkosten balans',`select * from expense_balances()`);
 await show('chore log delete',`delete from chore_log returning id`);

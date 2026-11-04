@@ -55,6 +55,5 @@
 
   seg.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{period=b.dataset.p;
     seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected",String(x===b)));load();}));
-  document.getElementById("openStats").addEventListener("click",()=>openPage("page-stats"));
-  pageHooks["page-stats"]=load;
+  tabHooks.stats=load;
 })();

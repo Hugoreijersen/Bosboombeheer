@@ -11,7 +11,7 @@
 .row-sub{font-size:.8rem;color:var(--muted);margin-top:2px;}
 .row-sub b{color:var(--fg);}
 .row-end{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
-.row-sub .dot,.turf-last .dot,.transfer .dot,.rsvp .dot{display:inline-block;width:9px;height:9px;margin-right:4px;vertical-align:0;}
+.split-list .dot,.row-sub .dot,.turf-last .dot,.transfer .dot,.rsvp .dot{display:inline-block;width:9px;height:9px;margin-right:4px;vertical-align:0;}
 .empty{padding:16px;color:var(--muted);font-size:.9rem;}
 .icon{font-size:1.35rem;line-height:1;width:30px;text-align:center;flex:none;}
 
@@ -137,3 +137,35 @@
 .hl .v{font-family:var(--display);font-weight:600;font-size:1.05rem;}
 .iconbtn.armed{width:auto;padding:0 10px;font-size:.76rem;font-weight:700;font-family:inherit;color:#fff;background:var(--rust);border-color:var(--rust);}
 .stat-grid .card,.highlights .card{margin-top:0 !important;}
+
+/* ---------- tabbladen + menubalk onderin ---------- */
+.wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px));}
+.view-title{font-family:var(--display);font-weight:600;font-size:1.7rem;margin:58px 0 0;line-height:1.1;}
+.view .page-head .view-title{margin:0;}
+.view .page-head{margin-top:58px;}
+.view-sub{display:block;font-size:.85rem;font-weight:700;color:var(--muted);margin-top:4px;}
+.view-sub.pos{color:var(--moss);}
+.view-sub.neg{color:var(--rust);}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(74,60,47,.08);
+  padding:6px max(8px,env(safe-area-inset-left,0px)) max(6px,env(safe-area-inset-bottom,0px));}
+.tabbar button{appearance:none;border:0;background:transparent;font-family:inherit;cursor:pointer;color:var(--muted);
+  display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:14px;font-size:.72rem;font-weight:700;position:relative;min-height:52px;}
+.tabbar .ti{font-size:1.35rem;line-height:1;filter:grayscale(.6);opacity:.75;transition:all .15s ease;}
+.tabbar button[aria-current="page"]{color:var(--moss);background:var(--moss-soft);}
+.tabbar button[aria-current="page"] .ti{filter:none;opacity:1;}
+.tabbar button:focus-visible{outline:3px solid var(--moss);outline-offset:-3px;}
+.tabbar .badge{position:absolute;top:6px;left:calc(50% + 10px);width:9px;height:9px;border-radius:50%;background:var(--rust);border:2px solid var(--panel);}
+@media (min-width:820px){.tabbar{left:50%;right:auto;transform:translateX(-50%);width:640px;bottom:12px;border:1px solid var(--line);border-radius:20px;padding:6px;}}
+
+/* ---------- pop-up ---------- */
+.modal{position:fixed;inset:0;z-index:150;background:rgba(20,16,10,.45);display:flex;align-items:flex-end;justify-content:center;padding:16px;}
+@media (min-width:560px){.modal{align-items:center;}}
+.modal-card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:20px;display:grid;gap:14px;max-height:90vh;overflow:auto;}
+.modal-card h3{margin:0;font-family:var(--display);font-weight:600;font-size:1.25rem;}
+.modal-card p{margin:0;color:var(--muted);font-size:.9rem;}
+.modal-card .big-input{font-size:1.6rem;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;padding:12px;}
+.split-list{display:grid;gap:6px;font-size:.88rem;}
+.split-list div{display:flex;justify-content:space-between;align-items:center;}
+.cook-costs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.cook-costs .chip{min-height:32px;padding:5px 11px;font-size:.78rem;}

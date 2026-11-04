@@ -22,6 +22,7 @@ js/auth.js                     login en boom claimen; start de app (laatst gelad
 sql/01_schema.sql              de database-tabellen + startdata
 sql/02_auth_and_policies.sql   login-koppeling + toegangsregels (security)
 sql/03_huispot_features.sql    tabellen en regels voor de nieuwe secties
+sql/04_eten_kosten.sql         boodschappen van de kok -> DeeldeDuit
 tests/                         node tests/rules.test.js  (en tests/sql.test.mjs)
 ```
 
@@ -41,6 +42,14 @@ de app praat daar rechtstreeks mee vanuit de browser.
 
 De belangrijkste code zit onderaan in `index.html`, in het blok
 `SUPABASE LIVE-LAAG`. Daarboven staat de UI (overgenomen uit het ontwerp).
+
+## Tabbladen
+
+Onderin staat een menubalk met vier tabbladen:
+**Huis** (wie is thuis, eten, agenda, weer, quote), **Praktisch** (huistaken, dibs,
+boodschappen, streeplijst, recepten), **DeeldeDuit** en **Statistieken**.
+Kiest iemand "Kookt", dan vraagt een pop-up wat de boodschappen kostten; dat komt als
+uitgave in DeeldeDuit, verdeeld over wie meeeet (gasten tellen bij wie ze meenam).
 
 ## Huisregels
 
