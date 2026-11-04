@@ -19,16 +19,26 @@ if [ -z "$BROWSER" ]; then sudo apt-get install -y chromium || sudo apt-get inst
 # Zuinig en zonder pop-ups. Geen vertaal-balk, geen "herstel pagina's", niet terug-swipen.
 FLAGS="--kiosk --noerrdialogs --disable-infobars --no-first-run --disable-session-crashed-bubble \
 --disable-features=Translate,TranslateUI --overscroll-history-navigation=0 --disable-pinch \
---check-for-update-interval=31536000 --password-store=basic --ozone-platform-hint=auto"
+--check-for-update-interval=31536000 --password-store=basic --ozone-platform-hint=auto \
+--enable-wayland-ime --wayland-text-input-version=3"
+# (die laatste twee: het schermtoetsenbord komt vanzelf op als je in een tekstveld tikt)
 
 mkdir -p "$HOME/.local/bin"
 cat > "$HOME/.local/bin/bosboom-kiosk" <<EOF
 #!/usr/bin/env bash
 # Wacht tot de app er is, start dan de browser (en opnieuw als hij crasht).
+# Altijd maar één kiosk tegelijk.
+exec 9>"\${XDG_RUNTIME_DIR:-/tmp}/bosboom-kiosk.lock"
+flock -n 9 || { echo "De kiosk draait al."; exit 0; }
 until curl -fs $HEALTH >/dev/null; do sleep 2; done
+# Eigen browserprofiel: zo is dit een aparte Chromium. Anders geeft hij de link door aan een
+# Chromium die al openstaat, stopt meteen, en laadt de pagina elke paar seconden opnieuw.
+PROFILE="\$HOME/.config/bosboom-kiosk"
 while true; do
-  "$BROWSER" $FLAGS "$URL"
-  sleep 3
+  start=\$(date +%s)
+  "$BROWSER" $FLAGS --user-data-dir="\$PROFILE" "$URL"
+  # Stopte hij binnen 10 seconden? Niet blijven herstarten, eerst even wachten.
+  if [ \$(( \$(date +%s) - start )) -lt 10 ]; then sleep 30; else sleep 3; fi
 done
 EOF
 chmod +x "$HOME/.local/bin/bosboom-kiosk"
@@ -39,6 +49,11 @@ if [ -d /etc/xdg/labwc ] || command -v labwc >/dev/null; then
   touch "$HOME/.config/labwc/autostart"
   grep -q bosboom-kiosk "$HOME/.config/labwc/autostart" || echo "$HOME/.local/bin/bosboom-kiosk &" >> "$HOME/.config/labwc/autostart"
   echo "Autostart: labwc"
+  # Schermtoetsenbord (squeekboard): verschijnt bij een tekstveld, verdwijnt daarna weer
+  command -v squeekboard >/dev/null || sudo apt-get install -y squeekboard
+  grep -q '^squeekboard' "$HOME/.config/labwc/autostart" || sed -i '1i squeekboard &' "$HOME/.config/labwc/autostart"
+  gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true 2>/dev/null || true
+  echo "Schermtoetsenbord: squeekboard"
 else
   mkdir -p "$HOME/.config/autostart"
   cat > "$HOME/.config/autostart/bosboom-kiosk.desktop" <<EOF
