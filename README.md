@@ -121,4 +121,5 @@ scherm 's nachts uit). Updaten: `git pull && sudo ./deploy/install.sh`.
 - **Pass 3 (deze stap):** bestanden opgesplitst, data-laag, Agenda, Dibs, Streeplijst,
   DeeldeDuit en statistieken. Draai eerst `sql/03_huispot_features.sql` in Supabase.
 - **Pass 4:** van Supabase naar PocketBase op de Pi, kiosk op het touchscreen.
-- **Later:** bereikbaar buiten huis (Cloudflare Tunnel of Tailscale), PWA (installeren op telefoon).
+- **Buiten huis:** via Tailscale Funnel naar de Pi (zie `deploy/README.md`). Cloudflare wordt niet meer gebruikt.
+- **Later:** PWA (installeren op telefoon).
