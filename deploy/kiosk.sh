@@ -31,6 +31,9 @@ cat > "$HOME/.local/bin/bosboom-kiosk" <<EOF
 exec 9>"\${XDG_RUNTIME_DIR:-/tmp}/bosboom-kiosk.lock"
 flock -n 9 || { echo "De kiosk draait al."; exit 0; }
 until curl -fs $HEALTH >/dev/null; do sleep 2; done
+# Even wachten tot het bureaublad klaar is (o.a. het scherm draaien): start Chromium te vroeg,
+# dan blijft hij wit.
+sleep 5
 # Eigen browserprofiel: zo is dit een aparte Chromium. Anders geeft hij de link door aan een
 # Chromium die al openstaat, stopt meteen, en laadt de pagina elke paar seconden opnieuw.
 PROFILE="\$HOME/.config/bosboom-kiosk"
