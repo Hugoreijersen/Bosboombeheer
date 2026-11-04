@@ -123,6 +123,16 @@
         <button class="addbtn" id="addRecipe">+ Recept</button>
       </div>
     </section>
+    <section>
+      <div class="sec-head"><h2 class="sec-title">Dit scherm</h2></div>
+      <div class="card scherm-card">
+        <div class="seg scherm-pick" id="schermPick" role="group" aria-label="Schermstand">
+          <button data-m="telefoon" aria-pressed="true">📱 Telefoon</button>
+          <button data-m="kiosk" aria-pressed="false">🖥️ Kiosk</button>
+        </div>
+        <p class="scherm-uitleg">Kiosk is voor het gedeelde touchscreen in huis: alles groter, scherm blijft aan, en na 3 minuten terug naar Huis. Telefoon is voor je eigen telefoon. Geldt alleen voor dit apparaat.</p>
+      </div>
+    </section>
     <p class="concept-note"><button class="ghostbtn" id="logoutBtn" hidden>Uitloggen</button></p>
   </div>
 
@@ -145,9 +155,27 @@
 
 <nav class="tabbar" aria-label="Menu">
   <button data-tab="huis"><span class="ti">🏡</span><span>Huis</span></button>
-  <button data-tab="praktisch"><span class="ti">🧺</span><span>Praktisch</span></button>
-  <button data-tab="duit"><span class="ti">💶</span><span>DeeldeDuit</span><i class="badge" id="duitBadge" hidden></i></button>
-  <button data-tab="stats"><span class="ti">📊</span><span>Statistieken</span></button>
+  <button data-tab="praktisch"><span class="ti"><svg viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M8 14 C8 4 24 4 24 14" fill="none" stroke="#8a5a2e" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M6.5 13h19l-2.2 14.2a2 2 0 0 1-2 1.8H10.7a2 2 0 0 1-2-1.8z" fill="#c8924f"/>
+      <g stroke="#9c6a35" stroke-width="1.3" fill="none"><path d="M7.4 18.5h17.2M8.2 23.5h15.6"/><path d="M12 13.5l.8 15M16 13.5v15M20 13.5l-.8 15"/></g>
+      <path d="M5 11.5h22l-1.2 3.5H6.2z" fill="#d9534f"/>
+      <g fill="#fff" opacity=".9"><rect x="8" y="11.5" width="2.6" height="1.75"/><rect x="13.2" y="11.5" width="2.6" height="1.75"/><rect x="18.4" y="11.5" width="2.6" height="1.75"/><rect x="23.6" y="11.5" width="2.4" height="1.75"/><rect x="10.6" y="13.25" width="2.6" height="1.75"/><rect x="15.8" y="13.25" width="2.6" height="1.75"/><rect x="21" y="13.25" width="2.6" height="1.75"/></g>
+    </svg></span><span>Praktisch</span></button>
+  <button data-tab="duit"><span class="ti"><svg viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M15 30c.6-4 .8-8 .6-12h1.8c-.2 4 0 8 .6 12z" fill="#7a5233"/>
+      <path d="M16 21l-4-3.5M16.4 19.5l3.6-3" stroke="#7a5233" stroke-width="1.4" stroke-linecap="round"/>
+      <circle cx="16" cy="11" r="9" fill="#4f9a5c"/><circle cx="9.5" cy="15" r="5.5" fill="#3f8a4e"/><circle cx="22.5" cy="15" r="5.5" fill="#3f8a4e"/>
+      <g fill="#e2b33c" stroke="#a87b1c" stroke-width=".9"><circle cx="11" cy="9.5" r="2.4"/><circle cx="20" cy="7.5" r="2.4"/><circle cx="16.5" cy="14" r="2.4"/><circle cx="8.5" cy="16.5" r="2.1"/><circle cx="23.5" cy="16" r="2.1"/></g>
+      <path d="M21.5 25.8a2.4 2.4 0 1 0 4.8 0a2.4 2.4 0 1 0-4.8 0" fill="#e2b33c" stroke="#a87b1c" stroke-width=".9"/>
+    </svg></span><span>DeeldeDuit</span><i class="badge" id="duitBadge" hidden></i></button>
+  <button data-tab="stats"><span class="ti"><svg viewBox="0 0 32 32" aria-hidden="true">
+      <g stroke="#7a5233" stroke-width="1.8" stroke-linecap="round" fill="none"><path d="M16 6.5L8.5 16M16 6.5L23.5 16M8.5 16L4.5 26M8.5 16L12.5 26M23.5 16L19.5 26M23.5 16L27.5 26"/></g>
+      <circle cx="16" cy="6" r="3.8" fill="#3f8a4e"/>
+      <circle cx="8.5" cy="16" r="3.3" fill="#4f9a5c"/><circle cx="23.5" cy="16" r="3.3" fill="#4f9a5c"/>
+      <g fill="#8cc06b"><circle cx="4.5" cy="26" r="2.8"/><circle cx="12.5" cy="26" r="2.8"/><circle cx="19.5" cy="26" r="2.8"/></g>
+      <circle cx="27.5" cy="26" r="2.8" fill="#e2b33c"/>
+    </svg></span><span>Statistieken</span></button>
 </nav>
 
 <div class="modal" id="modal" hidden><div class="modal-card" role="dialog" aria-modal="true"></div></div>
@@ -184,6 +212,7 @@
 <script src="js/rules.js"></script>
 <script src="js/db.js"></script>
 <script src="js/tabs.js"></script>
+<script src="js/scherm.js"></script>
 <script src="js/kookkosten.js"></script>
 <script src="js/thuis.js"></script>
 <script src="js/eten.js"></script>

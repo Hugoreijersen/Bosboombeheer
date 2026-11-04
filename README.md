@@ -22,6 +22,7 @@ deploy/                        installeren op de Raspberry Pi + kiosk (zie deplo
 js/app.js                      inladen, opslaan, live bijwerken
 js/thuis.js eten.js schoonmaak.js lijsten.js sfeer.js    de oorspronkelijke secties
 js/agenda.js dibs.js streep.js duit.js stats.js          de nieuwe secties
+js/scherm.js                   schermstand: telefoon of kiosk (per apparaat)
 js/auth.js                     login en boom claimen; start de app (laatst geladen)
 sql/                           de oude Supabase-versie (blijft als naslag/specificatie)
 sql/01_schema.sql              de database-tabellen + startdata
