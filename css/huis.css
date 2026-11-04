@@ -1,0 +1,139 @@
+/* De Bosboom — stijl voor Agenda, Dibs, Streeplijst, DeeldeDuit en Statistieken.
+   Bouwt op de tokens en kaarten uit base.css: zelfde kleuren, rondingen en lettertypes. */
+
+[hidden]{display:none !important;}
+
+/* ---------- algemene bouwstenen ---------- */
+.row{display:flex;align-items:center;gap:12px;padding:12px 16px;}
+.row+.row,.row+.panel,.panel+.row{border-top:1px solid var(--line);}
+.row-main{flex:1;min-width:0;}
+.row-title{font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.row-sub{font-size:.8rem;color:var(--muted);margin-top:2px;}
+.row-sub b{color:var(--fg);}
+.row-end{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+.row-sub .dot,.turf-last .dot,.transfer .dot,.rsvp .dot{display:inline-block;width:9px;height:9px;margin-right:4px;vertical-align:0;}
+.empty{padding:16px;color:var(--muted);font-size:.9rem;}
+.icon{font-size:1.35rem;line-height:1;width:30px;text-align:center;flex:none;}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:700;letter-spacing:.02em;padding:3px 10px;border-radius:999px;white-space:nowrap;background:var(--panel-2);color:var(--muted);}
+.pill.moss{background:var(--moss-soft);color:var(--moss);}
+.pill.amber{background:var(--amber-soft);color:var(--amber);}
+.pill.rust{background:var(--rust-soft);color:var(--rust);}
+
+.btn{font-family:inherit;cursor:pointer;border-radius:999px;font-weight:700;font-size:.82rem;border:1px solid var(--moss);background:transparent;color:var(--moss);padding:8px 14px;min-height:38px;white-space:nowrap;}
+.btn:hover{background:var(--moss-soft);}
+.btn.solid{background:var(--moss);color:#fff;}
+.btn.amber{border-color:var(--amber);color:var(--amber);}
+.btn.amber:hover{background:var(--amber-soft);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn:focus-visible,.chip:focus-visible,.tap:focus-visible,.linkbtn:focus-visible{outline:3px solid var(--moss);outline-offset:2px;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.solid{color:#10210f;}}
+:root[data-theme="dark"] .btn.solid{color:#10210f;}
+.linkbtn{appearance:none;border:0;background:transparent;color:var(--moss);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;padding:4px 2px;}
+.linkbtn.rust{color:var(--rust);}
+
+/* keuzechips (wie, hoe lang, soort) */
+.chips{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{appearance:none;font-family:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:999px;padding:7px 13px;font-weight:700;font-size:.8rem;display:inline-flex;align-items:center;gap:6px;min-height:36px;}
+.chip[aria-pressed="true"]{background:var(--moss-soft);border-color:var(--moss);color:var(--moss);}
+.chip.kring[aria-pressed="true"]{background:var(--amber-soft);border-color:var(--amber);color:var(--amber);}
+.chip .dot{width:9px;height:9px;}
+
+/* uitklapformulier binnen een kaart */
+.panel{background:var(--panel-2);padding:14px 16px;display:grid;gap:12px;}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
+.field{display:grid;gap:4px;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;}
+.field .txt,.field .sel,.field .date{width:100%;text-transform:none;letter-spacing:0;}
+.field.wide{grid-column:1/-1;}
+.panel .txt,.panel .sel,.panel .date{background:var(--panel);}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.form-err{color:var(--rust);font-size:.84rem;font-weight:600;}
+
+/* melding onderaan */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:max(18px,env(safe-area-inset-bottom,0px));z-index:200;max-width:min(92vw,420px);background:var(--fg);color:var(--bg);padding:11px 16px;border-radius:14px;font-weight:600;font-size:.88rem;box-shadow:var(--shadow);}
+.toast.err{background:var(--rust);color:#fff;}
+
+/* ---------- startscherm ---------- */
+.banner{margin:18px 0 0;display:flex;align-items:center;gap:12px;background:var(--amber-soft);color:var(--fg);border:1px solid var(--amber);border-radius:16px;padding:12px 16px;font-size:.92rem;}
+.banner .big{font-size:1.5rem;line-height:1;}
+.banner b{color:var(--amber);}
+.linkrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media (max-width:440px){.linkrow{grid-template-columns:1fr;}}
+.linkcard .sub{display:block;font-size:.78rem;color:var(--muted);font-weight:600;margin-top:1px;}
+.linkcard .sub.pos{color:var(--moss);}
+.linkcard .sub.neg{color:var(--rust);}
+
+/* ---------- agenda ---------- */
+.ev-date{flex:none;width:48px;text-align:center;border-radius:12px;background:var(--panel-2);padding:6px 0;line-height:1.1;}
+.ev-date .d{font-size:.64rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;}
+.ev-date .n{font-family:var(--display);font-weight:600;font-size:1.3rem;}
+.ev-date.kring{background:var(--amber-soft);}
+.ev-date.kring .n{color:var(--amber);}
+.ev-note{font-size:.85rem;color:var(--fg);margin-top:4px;white-space:pre-wrap;}
+.rsvp{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.rsvp .chip{padding:5px 11px;min-height:32px;font-size:.76rem;}
+.rsvp .chip[data-st="ja"]{background:var(--moss-soft);border-color:var(--moss);color:var(--moss);}
+.rsvp .chip[data-st="misschien"]{background:var(--amber-soft);border-color:var(--amber);color:var(--amber);}
+.rsvp .chip[data-st="nee"]{color:var(--muted);text-decoration:line-through;}
+.rsvp .chip.host{cursor:default;}
+
+/* ---------- dibs ---------- */
+.dib-claim+.dib-claim{margin-top:3px;}
+
+/* ---------- streeplijst ---------- */
+.turf{display:grid;gap:0;}
+.turf-row{display:grid;grid-template-columns:86px 1fr auto;align-items:center;gap:10px;padding:12px 16px;}
+.turf-row+.turf-row{border-top:1px solid var(--line);}
+.turf-who{display:flex;align-items:center;gap:7px;font-weight:700;}
+.turf-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.tap{appearance:none;font-family:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel-2);color:var(--fg);border-radius:12px;min-width:56px;min-height:46px;padding:4px 10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:800;font-size:.95rem;font-variant-numeric:tabular-nums;transition:transform .08s ease,background .15s ease;}
+.tap .i{font-size:1.25rem;}
+.tap:active{transform:scale(.94);}
+.tap.bump{background:var(--moss-soft);border-color:var(--moss);}
+.turf-total{font-weight:700;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right;min-width:64px;}
+.turf-last{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 16px;border-top:1px dashed var(--line);font-size:.82rem;color:var(--muted);}
+.turf-last b{color:var(--fg);}
+@media (max-width:440px){.turf-row{grid-template-columns:1fr auto;}.turf-btns{grid-column:1/-1;grid-row:2;}}
+.item-edit{display:grid;grid-template-columns:44px 1fr 76px 96px 84px;gap:8px;align-items:center;}
+.item-edit .linkbtn,.item-edit .btn{justify-self:start;}
+.item-edit .txt{padding:7px 8px;}
+.item-edit.off .txt{opacity:.5;}
+@media (max-width:520px){.item-edit{grid-template-columns:44px 1fr 74px;}.item-edit .stock{grid-column:2;}.item-edit .linkbtn,.item-edit .btn{grid-column:3;}
+  .item-edit+.item-edit{border-top:1px solid var(--line);padding-top:10px;}}
+
+/* ---------- DeeldeDuit ---------- */
+.money{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.money.pos{color:var(--moss);}
+.money.neg{color:var(--rust);}
+.bal{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.bal-cell{padding:16px 10px;text-align:center;display:grid;gap:4px;justify-items:center;}
+.bal-cell+.bal-cell{border-left:1px solid var(--line);}
+.bal-cell .money{font-family:var(--display);font-size:1.25rem;font-weight:600;}
+.bal-cell .lbl{font-size:.72rem;color:var(--muted);font-weight:700;}
+.share{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--panel);overflow:hidden;}
+.share .chip{border:0;border-radius:0;min-height:36px;}
+.share .step{appearance:none;border:0;border-left:1px solid var(--line);background:transparent;color:var(--muted);font-family:inherit;font-weight:800;cursor:pointer;width:34px;min-height:36px;}
+.share .n{font-size:.74rem;font-weight:800;color:var(--muted);padding:0 4px 0 2px;}
+.transfer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.transfer.paid .money{text-decoration:line-through;color:var(--muted);}
+.duit-h{font-family:var(--display);font-weight:600;font-size:1.1rem;margin:24px 0 10px;}
+.page-inner .card+.card{margin-top:12px;}
+
+/* ---------- statistieken ---------- */
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:18px 0 14px;}
+.page-head h2{margin:0;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.metric{padding:14px 16px;display:grid;gap:9px;}
+.metric h3{margin:0;font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;display:flex;justify-content:space-between;}
+.metric-row{display:grid;grid-template-columns:52px 1fr auto;gap:8px;align-items:center;font-size:.84rem;}
+.metric-row .nm{font-weight:700;}
+.metric-row .track{height:9px;border-radius:999px;background:var(--panel-2);overflow:hidden;}
+.metric-row .fill{height:100%;border-radius:999px;transition:width .4s ease;}
+.metric-row .v{font-weight:800;font-variant-numeric:tabular-nums;min-width:30px;text-align:right;}
+.highlights{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:12px;}
+.hl{padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.hl .big{font-size:1.6rem;line-height:1;}
+.hl .t{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;}
+.hl .v{font-family:var(--display);font-weight:600;font-size:1.05rem;}
+.iconbtn.armed{width:auto;padding:0 10px;font-size:.76rem;font-weight:700;font-family:inherit;color:#fff;background:var(--rust);border-color:var(--rust);}
+.stat-grid .card,.highlights .card{margin-top:0 !important;}
