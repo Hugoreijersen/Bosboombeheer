@@ -73,7 +73,7 @@ const toetsenbord=(()=>{
     shift=layout==="abc"&&!t.value&&!/^(email|password|url)$/.test(t.type);
     render(); el.hidden=false;
     document.documentElement.classList.add("kb-open");
-    setTimeout(()=>t.scrollIntoView({block:"center",behavior:"smooth"}),50);
+    setTimeout(()=>t.scrollIntoView({block:"center"}),50);
   }
   function hide(){
     target=null; if(el)el.hidden=true;

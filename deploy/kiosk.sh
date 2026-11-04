@@ -19,7 +19,7 @@ if [ -z "$BROWSER" ]; then sudo apt-get install -y chromium || sudo apt-get inst
 # Zuinig en zonder pop-ups. Geen vertaal-balk, geen "herstel pagina's", niet terug-swipen.
 FLAGS="--kiosk --noerrdialogs --disable-infobars --no-first-run --disable-session-crashed-bubble \
 --disable-features=Translate,TranslateUI --overscroll-history-navigation=0 --disable-pinch \
---check-for-update-interval=31536000 --password-store=basic \
+--check-for-update-interval=31536000 --disable-smooth-scrolling --password-store=basic \
 --enable-wayland-ime --wayland-text-input-version=3"
 # (die laatste twee: het schermtoetsenbord komt vanzelf op als je in een tekstveld tikt)
 
