@@ -12,6 +12,7 @@ declare -A PB_SHA256=(
 BASE=/opt/bosboom
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 
+[ "$(uname -s)" = Linux ] || { echo "Dit script is voor de Raspberry Pi. Log eerst in op de Pi (ssh) en draai het daar."; exit 1; }
 [ "$(id -u)" = 0 ] || { echo "Draai dit met sudo."; exit 1; }
 
 case "$(uname -m)" in

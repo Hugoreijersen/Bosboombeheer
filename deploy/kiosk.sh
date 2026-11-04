@@ -9,6 +9,7 @@ OFF="${1:-23:30}"; ON="${2:-07:00}"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 URL="http://localhost:8090/"
 
+[ "$(uname -s)" = Linux ] || { echo "Dit script is voor de Raspberry Pi. Log eerst in op de Pi (ssh) en draai het daar."; exit 1; }
 [ "$(id -u)" != 0 ] || { echo "Draai dit zonder sudo, als de gebruiker van het bureaublad."; exit 1; }
 
 BROWSER="$(command -v chromium || command -v chromium-browser || true)"
