@@ -15,7 +15,7 @@ alter default privileges in schema public grant all on functions to authenticate
 alter default privileges in schema public grant all on sequences to authenticated, anon;
 create publication supabase_realtime;
 insert into auth.users values ('00000000-0000-0000-0000-000000000001');`);
-for(const f of ['01_schema.sql','02_auth_and_policies.sql','03_huispot_features.sql','03_huispot_features.sql','04_eten_kosten.sql','04_eten_kosten.sql']) { await db.exec(fs.readFileSync(R+f,'utf8')); console.log('ran',f); }
+for(const f of ['01_schema.sql','02_auth_and_policies.sql','03_huispot_features.sql','03_huispot_features.sql','04_eten_kosten.sql','04_eten_kosten.sql','05_partner_home.sql','05_partner_home.sql']) { await db.exec(fs.readFileSync(R+f,'utf8')); console.log('ran',f); }
 await db.exec(`insert into profiles values ('00000000-0000-0000-0000-000000000001','iep');`);
 const as=async(sql,params)=>{ await db.exec(`begin; set local role authenticated; set local request.jwt.claim.sub='00000000-0000-0000-0000-000000000001';`);
   try{ const r=await db.query(sql,params); await db.exec('commit'); return r.rows; } catch(e){ await db.exec('rollback'); return 'ERR '+e.message; } };

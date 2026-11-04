@@ -25,8 +25,9 @@ function blankWeek(){const mk=()=>({Iep:Array(7).fill(""),Berk:Array(7).fill("")
   return {status:mk(),guests:z(),dayNotes:Array.from({length:7},()=>[])};}
 // Lege stand; wordt gevuld vanuit de database na inloggen (zie app.js).
 const state={
-  home:{Iep:true,Berk:true,Eik:true,Mandarijn:false},
-  away:{Iep:"",Berk:"",Eik:"",Mandarijn:""},
+  home:{Iep:true,Berk:true,Eik:true},
+  away:{Iep:"",Berk:"",Eik:""},
+  partner:{},          // wie er bij een boom hoort en thuis is (Mandarijn bij Berk)
   weeks:{},
   chores:[],
   shopping:[],
