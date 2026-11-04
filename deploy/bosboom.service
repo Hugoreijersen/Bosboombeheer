@@ -1,0 +1,28 @@
+[Unit]
+Description=De Bosboom (PocketBase)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=bosboom
+Group=bosboom
+WorkingDirectory=/opt/bosboom
+ExecStart=/opt/bosboom/pocketbase serve --http=0.0.0.0:8090 \
+  --dir=/opt/bosboom/pb_data \
+  --hooksDir=/opt/bosboom/app/pb_hooks \
+  --migrationsDir=/opt/bosboom/app/pb_migrations \
+  --publicDir=/opt/bosboom/public
+Restart=always
+RestartSec=5
+# Een Pi 3 heeft weinig geheugen: houd PocketBase klein en laat de rest voor de browser.
+Environment=GOMEMLIMIT=150MiB
+MemoryMax=300M
+# Afschermen: PocketBase mag alleen in zijn eigen map schrijven.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/bosboom/pb_data
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
