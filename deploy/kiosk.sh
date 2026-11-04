@@ -19,7 +19,7 @@ if [ -z "$BROWSER" ]; then sudo apt-get install -y chromium || sudo apt-get inst
 # Zuinig en zonder pop-ups. Geen vertaal-balk, geen "herstel pagina's", niet terug-swipen.
 FLAGS="--kiosk --noerrdialogs --disable-infobars --no-first-run --disable-session-crashed-bubble \
 --disable-features=Translate,TranslateUI --overscroll-history-navigation=0 --disable-pinch \
---check-for-update-interval=31536000 --password-store=basic --ozone-platform-hint=auto \
+--check-for-update-interval=31536000 --password-store=basic \
 --enable-wayland-ime --wayland-text-input-version=3"
 # (die laatste twee: het schermtoetsenbord komt vanzelf op als je in een tekstveld tikt)
 
@@ -34,9 +34,17 @@ until curl -fs $HEALTH >/dev/null; do sleep 2; done
 # Eigen browserprofiel: zo is dit een aparte Chromium. Anders geeft hij de link door aan een
 # Chromium die al openstaat, stopt meteen, en laadt de pagina elke paar seconden opnieuw.
 PROFILE="\$HOME/.config/bosboom-kiosk"
+# Wayland (labwc) of X11? Ook goed als je dit via ssh start.
+export XDG_RUNTIME_DIR="\${XDG_RUNTIME_DIR:-/run/user/\$(id -u)}"
+[ -n "\${WAYLAND_DISPLAY:-}" ] || WAYLAND_DISPLAY="\$(ls "\$XDG_RUNTIME_DIR" 2>/dev/null | grep -m1 '^wayland-[0-9]*\$')"
+if [ -n "\$WAYLAND_DISPLAY" ]; then export WAYLAND_DISPLAY; PLATFORM=--ozone-platform=wayland
+else export DISPLAY="\${DISPLAY:-:0}"; PLATFORM=--ozone-platform=x11; fi
+LOG="\$HOME/.cache/bosboom-kiosk.log"; mkdir -p "\$(dirname "\$LOG")"
 while true; do
   start=\$(date +%s)
-  "$BROWSER" $FLAGS --user-data-dir="\$PROFILE" "$URL"
+  echo "\$(date '+%F %T') start (\$PLATFORM)" >> "\$LOG"
+  "$BROWSER" $FLAGS \$PLATFORM --user-data-dir="\$PROFILE" "$URL" >> "\$LOG" 2>&1
+  tail -n 500 "\$LOG" > "\$LOG.tmp" && mv "\$LOG.tmp" "\$LOG"
   # Stopte hij binnen 10 seconden? Niet blijven herstarten, eerst even wachten.
   if [ \$(( \$(date +%s) - start )) -lt 10 ]; then sleep 30; else sleep 3; fi
 done
