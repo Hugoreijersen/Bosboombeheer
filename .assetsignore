@@ -1,0 +1,12 @@
+.git
+.github
+.claude
+node_modules
+sql
+tests
+pb_migrations
+pb_hooks
+README.md
+CLAUDE.md
+wrangler.jsonc
+.assetsignore
