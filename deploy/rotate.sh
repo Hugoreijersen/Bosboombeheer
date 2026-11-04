@@ -59,6 +59,8 @@ fi
 # Voor als kanshi niet automatisch start: bij het opstarten zelf draaien
 AS="$HOME/.config/labwc/autostart"; touch "$AS"
 sed -i '/# bosboom-rotate/d' "$AS"
-echo "wlr-randr --output $OUT --transform $T  # bosboom-rotate" >> "$AS"
+# Bovenaan: eerst draaien, dan pas de kiosk starten (anders blijft Chromium wit)
+LINE="wlr-randr --output $OUT --transform $T  # bosboom-rotate"
+if [ -s "$AS" ]; then sed -i "1i $LINE" "$AS"; else echo "$LINE" > "$AS"; fi
 
 echo "Klaar. Klopt de richting niet? Probeer de andere kant (90 <-> 270). Herstart om zeker te zijn: sudo reboot"
