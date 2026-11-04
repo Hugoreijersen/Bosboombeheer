@@ -39,6 +39,17 @@ sudo reboot
 De browser (Chromium) start schermvullend in de app en herstart vanzelf als hij crasht.
 's Nachts gaat het scherm uit; dat scheelt het meeste stroom. Handmatig: `deploy/screen.sh off` / `on`.
 
+## 3. Buiten huis (Tailscale Funnel)
+
+```bash
+sudo ./deploy/funnel.sh
+```
+
+Je krijgt een vaste link als `https://bosboom.<naam>.ts.net` die overal werkt, ook op 4G.
+De eerste keer log je in bij Tailscale (gratis) en zet je Funnel aan via de link die het script toont.
+Zet de link daarna in het beheerscherm bij Settings > Application URL.
+Uitzetten: `sudo tailscale funnel --https=443 off`.
+
 ## Updaten
 
 ```bash
