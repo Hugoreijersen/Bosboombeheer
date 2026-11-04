@@ -25,6 +25,7 @@ const scherm=(()=>{
     const out=document.getElementById("logoutBtn"); if(out&&typeof myResidentId!=="undefined"&&myResidentId)out.hidden=mode==="kiosk";
     document.querySelectorAll("#schermPick [data-m]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===mode));
     poke();
+    if(typeof refreshFooters==="function")refreshFooters();   // kookkosten-veld wel/niet
     if(mode==="kiosk")keepAwake(); else if(wake){wake.release().catch(()=>{});wake=null;}
   }
   document.querySelectorAll("#schermPick [data-m]").forEach(b=>b.addEventListener("click",()=>{mode=b.dataset.m;set(KEY,mode);apply();}));
