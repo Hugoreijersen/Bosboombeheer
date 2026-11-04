@@ -20,8 +20,10 @@ if [ -z "$BROWSER" ]; then sudo apt-get install -y chromium || sudo apt-get inst
 FLAGS="--kiosk --noerrdialogs --disable-infobars --no-first-run --disable-session-crashed-bubble \
 --disable-features=Translate,TranslateUI --overscroll-history-navigation=0 --disable-pinch \
 --check-for-update-interval=31536000 --disable-smooth-scrolling --password-store=basic \
---enable-wayland-ime --wayland-text-input-version=3"
-# (die laatste twee: het schermtoetsenbord komt vanzelf op als je in een tekstveld tikt)
+--renderer-process-limit=1 --disable-extensions --disable-background-networking --disable-sync \
+--disable-component-update --disable-default-apps --disable-breakpad"
+# (de Pi 3 heeft maar 1 GB: één tabblad-proces, geen extensies en geen achtergrondverkeer.
+#  Het schermtoetsenbord zit in de app zelf, zie js/toetsenbord.js.)
 
 mkdir -p "$HOME/.local/bin"
 cat > "$HOME/.local/bin/bosboom-kiosk" <<EOF
@@ -60,11 +62,9 @@ if [ -d /etc/xdg/labwc ] || command -v labwc >/dev/null; then
   touch "$HOME/.config/labwc/autostart"
   grep -q bosboom-kiosk "$HOME/.config/labwc/autostart" || echo "$HOME/.local/bin/bosboom-kiosk &" >> "$HOME/.config/labwc/autostart"
   echo "Autostart: labwc"
-  # Schermtoetsenbord (squeekboard): verschijnt bij een tekstveld, verdwijnt daarna weer
-  command -v squeekboard >/dev/null || sudo apt-get install -y squeekboard
-  grep -q '^squeekboard' "$HOME/.config/labwc/autostart" || sed -i '1i squeekboard &' "$HOME/.config/labwc/autostart"
-  gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true 2>/dev/null || true
-  echo "Schermtoetsenbord: squeekboard"
+  # Squeekboard (van een eerdere versie) is niet meer nodig: de app heeft een eigen toetsenbord
+  sed -i '/^squeekboard/d' "$HOME/.config/labwc/autostart"
+  pkill -x squeekboard 2>/dev/null || true
 else
   mkdir -p "$HOME/.config/autostart"
   cat > "$HOME/.config/autostart/bosboom-kiosk.desktop" <<EOF
