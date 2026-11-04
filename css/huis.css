@@ -209,3 +209,11 @@ html.kiosk .wrap{max-width:900px;}
 .kb-num .kb-k{max-width:none;height:56px;}
 .kb-num .kb-fn{flex-grow:1;}
 html.kb-open body{padding-bottom:300px;}
+
+/* ---------- kiosk licht: de Pi 3 tekent traag, dus geen animaties, vervaging of schaduwen ---------- */
+html.kiosk #fx{display:none;}
+html.kiosk *,html.kiosk *::before,html.kiosk *::after{transition:none!important;animation:none!important;scroll-behavior:auto!important;}
+html.kiosk{--shadow:0 0 0 1px var(--line);}
+html.kiosk .tabbar{box-shadow:none;}
+html.kiosk .kb{box-shadow:none;}
+html.kiosk .tabbar .ti,html.kiosk .tree-card[data-home="false"] svg{filter:none;}

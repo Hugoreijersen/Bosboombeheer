@@ -42,6 +42,8 @@ const days0=["zo","ma","di","wo","do","vr","za"];
 const fx=document.getElementById("fx"),fxc=fx.getContext("2d");
 const dpr=Math.min(2,window.devicePixelRatio||1),reduceMo=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let parts=[],fxRun=false;
+// Geen vallende deeltjes op de kiosk: een Pi 3 moet dan 60x per seconde het hele scherm opnieuw tekenen.
+const still=()=>reduceMo||(typeof scherm!=="undefined"&&scherm.kiosk);
 function fxResize(){fx.width=innerWidth*dpr;fx.height=innerHeight*dpr;fxc.setTransform(dpr,0,0,dpr,0,0);}
 const PARTS={
   herfst:{n:22,shape:"leaf",sway:1.1,vy:[.5,1.3],r:[4,8],col:["#c67a2e","#b45436","#9c5a2d","#c2a23f"]},
@@ -58,13 +60,14 @@ function drawPart(p,c){fxc.save();fxc.translate(p.x,p.y);fxc.rotate(p.rot);fxc.g
   fxc.restore();}
 function fxTick(){const c=PARTS[season];fxc.clearRect(0,0,innerWidth,innerHeight);
   if(c)parts.forEach(p=>{p.ph+=.02;p.x+=Math.sin(p.ph)*c.sway;p.y+=p.vy;p.rot+=p.vr;if(p.y>innerHeight+20)Object.assign(p,spawn(c,false));drawPart(p,c);});
+  if(still()){fxRun=false;fxc.clearRect(0,0,innerWidth,innerHeight);return;}
   if(fxRun)requestAnimationFrame(fxTick);}
-function startFx(){fxResize();mkParts();if(reduceMo){fxc.clearRect(0,0,innerWidth,innerHeight);return;}if(!fxRun){fxRun=true;requestAnimationFrame(fxTick);}}
+function startFx(){fxResize();mkParts();if(still()){fxc.clearRect(0,0,innerWidth,innerHeight);return;}if(!fxRun){fxRun=true;requestAnimationFrame(fxTick);}}
 window.addEventListener("resize",fxResize);
 
 function applySeason(){document.documentElement.dataset.season=season;
   seasonPick.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.s===season)));
-  renderTrees();renderWeather();mkParts();if(reduceMo)fxc.clearRect(0,0,innerWidth,innerHeight);}
+  renderTrees();renderWeather();mkParts();if(still())fxc.clearRect(0,0,innerWidth,innerHeight);}
 seasonPick.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{season=b.dataset.s;applySeason();}));
 renderWeather();startFx();applySeason();
 loadWeather(); setInterval(loadWeather, 30*60*1000);   // live weer + elke 30 min verversen
