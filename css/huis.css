@@ -44,6 +44,8 @@
 .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
 .field{display:grid;gap:4px;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;}
 .field .txt,.field .sel,.field .date{width:100%;text-transform:none;letter-spacing:0;}
+.fgrid>*{min-width:0;}
+.field .txt,.field .sel,.field .date{min-width:0;box-sizing:border-box;}
 .field.wide{grid-column:1/-1;}
 .panel .txt,.panel .sel,.panel .date{background:var(--panel);}
 .actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
