@@ -52,11 +52,21 @@ function renderTrees(){
     if(p.name==="Berk"){
       const mandarinBox=document.createElement("div");
       mandarinBox.className=`mandarin-box${state.home.Mandarijn ? " on" : ""}`;
-      mandarinBox.innerHTML=`<div class="mandarin-label">Mandarijn</div><div class="mandarin-status">${state.home.Mandarijn ? "thuis" : "weg"}</div>`;
+      mandarinBox.innerHTML=`<svg class="mandarin-fruit" width="24" height="24" viewBox="0 0 40 40" aria-hidden="true">
+        <g fill="${state.home.Mandarijn ? "#d98b2d" : "#d7d1c5"}">
+          <circle cx="20" cy="20" r="11"/>
+          <circle cx="16" cy="15" r="2.2" fill="rgba(255,255,255,.45)"/>
+          <circle cx="23" cy="24" r="2.2" fill="rgba(255,255,255,.45)"/>
+          <path d="M20 5 L22 11 L18 11 Z" fill="#5f8f4b"/>
+          <path d="M20 3 C22 7, 24 8, 26 8" stroke="#5f8f4b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M20 3 C18 7, 16 8, 14 8" stroke="#5f8f4b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </g>
+      </svg><div class="mandarin-label">Mandarijn</div><div class="mandarin-status">${state.home.Mandarijn ? "thuis" : "weg"}</div>`;
       mandarinBox.addEventListener("click",e=>{e.stopPropagation();toggleMandarinHome();});
       mandarinBox.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();toggleMandarinHome();}});
       mandarinBox.setAttribute("role","button");mandarinBox.tabIndex=0;mandarinBox.setAttribute("aria-pressed",String(state.home.Mandarijn));
       card.appendChild(mandarinBox);
+      card.classList.add("berk-has-mandarijn");
     }
     treesEl.appendChild(card);});
 }
