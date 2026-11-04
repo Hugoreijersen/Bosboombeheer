@@ -171,7 +171,10 @@
 .modal-card .big-input{font-size:1.6rem;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;padding:12px;}
 .split-list{display:grid;gap:6px;font-size:.88rem;}
 .split-list div{display:flex;justify-content:space-between;align-items:center;}
-.cook-costs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.cook-costs{display:grid;gap:8px;margin-top:10px;}
+.cc-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.86rem;font-weight:700;color:var(--muted);}
+.cc-row .cc-amt{width:96px;flex:0 0 auto;padding:6px 10px;}
+.cc-row .btn{min-height:34px;}
 .cook-costs .chip{min-height:32px;padding:5px 11px;font-size:.78rem;}
 
 /* ---------- grotere icoontjes ---------- */

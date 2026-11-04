@@ -21,7 +21,7 @@ function refreshFooters(){["day","week"].forEach(w=>{const el=document.getElemen
 function bindEditor(where,container){const g=()=>ctx(where);
   container.querySelectorAll(".stbtns").forEach((grp,idx)=>{const name=people[idx].name;
     grp.querySelectorAll("button").forEach(btn=>btn.addEventListener("click",()=>{const{off,d}=g();const wk=W(off);
-      wk.status[name][d]=wk.status[name][d]===btn.dataset.st?"":btn.dataset.st;changed(where,"status");persistMeal(name,off,d);if(wk.status[name][d]==="kookt")cookCost.ask(name,off,d);}));});
+      wk.status[name][d]=wk.status[name][d]===btn.dataset.st?"":btn.dataset.st;changed(where,"status");persistMeal(name,off,d);}));});
   container.querySelectorAll(".gnum").forEach(inp=>inp.addEventListener("input",()=>{const{off,d}=g();let v=parseInt(inp.value,10);if(isNaN(v)||v<0)v=0;W(off).guests[inp.dataset.p][d]=v;changed(where,"guest");persistMeal(inp.dataset.p,off,d);}));
   const addBtn=document.getElementById("nqadd-"+where),txt=document.getElementById("nq-"+where),who=document.getElementById("nqw-"+where);
   const doAdd=async()=>{const v=txt.value.trim();if(!v)return;const{off,d}=g();const author=who.value;const note={text:v,by:author};W(off).dayNotes[d].push(note);txt.value="";refreshFooters();note.id=await persistNoteAdd(off,d,author,v);};
