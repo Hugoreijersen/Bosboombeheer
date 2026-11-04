@@ -61,7 +61,7 @@ function renderTrees(){
           <path d="M20 3 C22 7, 24 8, 26 8" stroke="#5f8f4b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
           <path d="M20 3 C18 7, 16 8, 14 8" stroke="#5f8f4b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
         </g>
-      </svg><div class="mandarin-label">Mandarijn</div><div class="mandarin-status">${state.home.Mandarijn ? "thuis" : "weg"}</div>`;
+      </svg><div class="mandarin-status">${state.home.Mandarijn ? "thuis" : "weg"}</div>`;
       mandarinBox.addEventListener("click",e=>{e.stopPropagation();toggleMandarinHome();});
       mandarinBox.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();toggleMandarinHome();}});
       mandarinBox.setAttribute("role","button");mandarinBox.tabIndex=0;mandarinBox.setAttribute("aria-pressed",String(state.home.Mandarijn));
