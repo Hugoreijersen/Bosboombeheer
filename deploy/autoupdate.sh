@@ -22,17 +22,21 @@ if [ -n "$(git_ status --porcelain --untracked-files=no)" ]; then
 fi
 
 git_ fetch -q origin main
+# Welke versie is echt geïnstalleerd? Mislukte een installatie, dan probeert de volgende ronde het opnieuw.
+STATE="${BOSBOOM_STATE:-/opt/bosboom/installed-commit}"
+installed="$(cat "$STATE" 2>/dev/null || true)"
 old="$(git_ rev-parse HEAD)"; new="$(git_ rev-parse origin/main)"
-[ "$old" != "$new" ] || exit 0
+[ "$old" != "$new" ] || [ "$installed" != "$new" ] || exit 0
 
-echo "Nieuw op main: $(git_ log --oneline "$old..$new" | wc -l) commit(s), tot $(git_ log -1 --format='%h %s' "$new")"
+echo "Nieuw op main: tot $(git_ log -1 --format='%h %s' "$new")"
 git_ merge -q --ff-only origin/main
 "$REPO/deploy/install.sh" </dev/null
+echo "$new" > "$STATE"
 
 # De kiosk laadt de nieuwe versie pas na herladen: sluit de browser, de kiosk-lus start hem opnieuw.
 pkill -u "$OWNER" -f -- '--user-data-dir=.*bosboom-kiosk' && echo "Kiosk herladen." || true
 
-if git_ diff --quiet "$old" "$new" -- deploy/kiosk.sh deploy/rotate.sh; then :; else
+if [ -n "$installed" ] && ! git_ diff --quiet "$installed" "$new" -- deploy/kiosk.sh deploy/rotate.sh 2>/dev/null; then
   echo "LET OP: deploy/kiosk.sh of rotate.sh is veranderd. Draai op de Pi nog: ./deploy/kiosk.sh (zonder sudo)."
 fi
 echo "Bijgewerkt naar $(git_ rev-parse --short HEAD)."
