@@ -129,7 +129,7 @@ de apparaatknop op 480 x 800 zie je het staande scherm). Maak een account en cla
 
 Zie **[deploy/README.md](deploy/README.md)**: in het kort `sudo ./deploy/install.sh`
 (PocketBase + de app als service) en `./deploy/kiosk.sh` (touchscreen start in de app,
-scherm 's nachts uit). Updaten: `git pull && sudo ./deploy/install.sh`.
+scherm 's nachts uit). Na een merge werkt de Pi zichzelf binnen een paar minuten bij.
 
 ## Status
 
