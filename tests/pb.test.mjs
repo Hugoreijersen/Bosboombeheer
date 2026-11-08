@@ -191,6 +191,7 @@ try {
 
   // ---------- de app zelf wordt geserveerd ----------
   ok("index.html", (await fetch(URL_ + "/")).status, 200);
+  ok("app-bestanden niet oud uit de cache", (await fetch(URL_ + "/js/eten.js")).headers.get("cache-control"), "no-cache");
 
   console.log(`\n${n} tests geslaagd`);
 } catch (e) {
