@@ -34,6 +34,15 @@ function myResident(app, authId) {
   try { return app.findRecordById("profiles", authId).getString("resident_id"); } catch (_) { return ""; }
 }
 
+// Naam van de ingelogde bewoner ("Iep"), voor opmerkingen. Leeg als je (nog) geen boom hebt.
+function myName(app, authId) {
+  const rid = myResident(app, authId);
+  if (!rid) return "";
+  try { return app.findRecordById("residents", rid).getString("name"); } catch (_) { return ""; }
+}
+// Een gewone gebruiker (geen beheerder in het PocketBase-dashboard)?
+const isUser = (e) => !!(e.auth && e.auth.collection().name === "users");
+
 const plain = (rec, fields) => { const o = { id: rec.id }; fields.forEach((f) => (o[f] = rec.getString(f))); return o; };
 
 function overlapping(app, collection, extraFilter, rec, params) {
@@ -69,7 +78,26 @@ function requestDefaults(e) {
     case "chore_log": if (blank("done_at")) rec.set("done_at", today()); break;
     case "residents": if (!("is_home" in body)) rec.set("is_home", true); break;
     case "turf_marks": rec.set("settlement_id", ""); break;   // een nieuwe streep is altijd open
+    case "day_notes":
+      // Een opmerking staat altijd op de naam van wie hem plaatst, wat de app ook meestuurt.
+      if (isUser(e)) {
+        const me = myName(e.app, authId);
+        if (!me) fail("geen_boom");
+        rec.set("author", me);
+      }
+      break;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Bij bewerken via de API: je mag alleen je eigen opmerking aanpassen, en de naam blijft staan.
+// ---------------------------------------------------------------------------
+function requestUpdate(e) {
+  const rec = e.record;
+  if (rec.collection().name !== "day_notes" || !isUser(e)) return;
+  const was = rec.original().getString("author");
+  if (was !== myName(e.app, e.auth.id)) fail("niet_jouw_opmerking");
+  rec.set("author", was);
 }
 
 // ---------------------------------------------------------------------------
@@ -260,4 +288,4 @@ function call(e) {
   return out;
 }
 
-module.exports = { requestDefaults, beforeSave, afterSave, afterDelete, call };
+module.exports = { requestDefaults, requestUpdate, beforeSave, afterSave, afterDelete, call };

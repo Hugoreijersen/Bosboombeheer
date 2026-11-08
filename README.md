@@ -68,6 +68,9 @@ uitgave in DeeldeDuit, verdeeld over wie meeeet (gasten tellen bij wie ze meenam
 - **DeeldeDuit:** alles in hele centen; de overgebleven centen gaan naar de grootste rest,
   zodat elk scherm precies hetzelfde rekent. Afrekenen maakt zo min mogelijk overboekingen.
   Afgerekende uitgaven zijn alleen-lezen; terugdraaien kan zolang er niets betaald is.
+- **Opmerkingen bij het eten:** staan altijd op de naam van wie ingelogd is (de server zet
+  de naam, wat de app ook stuurt). Alleen je eigen opmerking kun je bewerken. Quotes,
+  boodschappen en recepten kan iedereen bewerken (✎).
 
 De regels staan in `js/rules.js` (snelle melding in de app) én op de server
 (`pb_hooks/`, die dezelfde `js/rules.js` gebruikt), zodat ook twee telefoons tegelijk

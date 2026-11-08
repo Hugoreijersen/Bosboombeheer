@@ -76,6 +76,16 @@ try {
   ok("recept startdata", (await iep.list("recipes"))[0].ingredients.length, 5);
   const r = await iep.insert("recipes", { title: "Soep", time_min: null, ingredients: ["water"], steps: "" });
   ok("recept zonder tijd", r.time_min, null);
+  // ---------- opmerkingen: altijd op je eigen naam ----------
+  const nt = await iep.insert("day_notes", { day: "2026-11-05", author: "Berk", text: "Ik eet laat" });
+  ok("opmerking op eigen naam", nt.author, "Iep");
+  ok("opmerking bewerken", (await iep.update("day_notes", { id: nt.id }, { text: "Ik eet om 19:00", author: "Berk" }))[0].author, "Iep");
+  ok("tekst bewerkt", (await berk.list("day_notes", { where: { id: nt.id } }))[0].text, "Ik eet om 19:00");
+  ok("andermans opmerking bewerken", await code(berk.update("day_notes", { id: nt.id }, { text: "gehackt" })), "niet_jouw_opmerking");
+  const zonder = client(); await zonder.auth.signUp("gast@bosboom.nl", "geheim123");
+  ok("opmerking zonder boom", await code(zonder.insert("day_notes", { day: "2026-11-05", author: "Eik", text: "x" })), "geen_boom");
+  const qt = await berk.insert("quotes", { text: "Hoi", author: "Eik" });
+  ok("quote bewerken", (await iep.update("quotes", { id: qt.id }, { text: "Hallo", author: "Berk" }))[0].author, "Berk");
   const s = await iep.insert("shopping", { text: "Melk" });
   ok("boodschap created_at", /^\d{4}-\d\d-\d\dT/.test(s.created_at), true);
   await iep.update("shopping", { id: s.id }, { done: true });
