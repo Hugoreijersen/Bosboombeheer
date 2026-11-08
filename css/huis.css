@@ -134,7 +134,8 @@
 .metric-row .v{font-weight:800;font-variant-numeric:tabular-nums;min-width:30px;text-align:right;}
 .highlights{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:12px;}
 .hl{padding:14px 16px;display:flex;align-items:center;gap:12px;}
-.hl .big{font-size:1.6rem;line-height:1;}
+.hl .big{font-size:1.6rem;line-height:1;display:flex;}
+.hl .big svg{width:1.15em;height:1.15em;}
 .hl .t{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;}
 .hl .v{font-family:var(--display);font-weight:600;font-size:1.05rem;}
 .iconbtn.armed{width:auto;padding:0 10px;font-size:.76rem;font-weight:700;font-family:inherit;color:#fff;background:var(--rust);border-color:var(--rust);}

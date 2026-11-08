@@ -57,6 +57,10 @@ else export DISPLAY="\${DISPLAY:-:0}"; PLATFORM=--ozone-platform=x11; fi
 LOG="\$HOME/.cache/bosboom-kiosk.log"; mkdir -p "\$(dirname "\$LOG")"
 while true; do
   start=\$(date +%s)
+  # Chromium laat bij elke start statistiekbestanden achter (BrowserMetrics, ± 4 MB per keer).
+  # Bij veel herstarts vulde dat de hele SD-kaart (21 GB). Daarom elke keer weggooien.
+  rm -rf "\$PROFILE/BrowserMetrics" "\$PROFILE/DeferredBrowserMetrics" \
+         "\$HOME/.config/chromium/BrowserMetrics" "\$HOME/.config/chromium/DeferredBrowserMetrics"
   echo "\$(date '+%F %T') start $(basename "$BROWSER") (\$PLATFORM)" >> "\$LOG"
   if [ "$(basename "$BROWSER")" = cog ]; then
     COG_PLATFORM_WL_VIEW_FULLSCREEN=1 "$BROWSER" --platform=wl "$URL" >> "\$LOG" 2>&1
