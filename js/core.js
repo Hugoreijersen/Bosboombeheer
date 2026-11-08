@@ -35,6 +35,7 @@ const state={
   plans:{},
 };
 let myResidentId=null;  // welke boom ben ik (na inloggen)
+const myName=()=>myResidentId?personOf(myResidentId).name:"";
 const W=off=>{const k=String(off);if(!state.weeks[k])state.weeks[k]=blankWeek();return state.weeks[k];};
 let weekOffset=0, selectedDay=todayIdx;
 let season=(()=>{const m=new Date().getMonth();return m>=2&&m<=4?"lente":m>=5&&m<=7?"zomer":m>=8&&m<=10?"herfst":"winter";})();
@@ -71,6 +72,7 @@ const ERR={
   al_betaald:"Er is al iets betaald, dus terugdraaien kan niet meer.",
   item_niet_actief:"Dat drankje staat niet meer op de lijst.",geen_deelnemers:"Kies wie er meedoen.",
   geen_toegang:"Dat mag niet.",
+  niet_jouw_opmerking:"Je kunt alleen je eigen opmerkingen bewerken.",geen_boom:"Kies eerst je boom.",
 };
 const errText=e=>ERR[e&&e.code]||("Er ging iets mis: "+((e&&e.message)||e));
 let toastTimer=null;
@@ -88,4 +90,17 @@ function confirmTap(btn,action){
   if(btn.dataset.armed){action();return;}
   btn.dataset.armed="1";const old=btn.innerHTML;btn.innerHTML="Zeker?";btn.classList.add("armed");
   setTimeout(()=>{if(btn.isConnected){delete btn.dataset.armed;btn.innerHTML=old;btn.classList.remove("armed");}},3000);
+}
+
+// Bewerken op de plek: de rij wordt invoervelden met Opslaan/Annuleren.
+// fields: [{value,ph,max}], het eerste veld is verplicht. onSave(waarden) slaat op; rerender tekent de lijst opnieuw.
+function editInPlace(row,fields,onSave,rerender){
+  row.classList.add("editing");
+  row.innerHTML=`<div class="edit-row">${fields.map(f=>`<input class="txt" type="text" maxlength="${f.max||500}" placeholder="${esc(f.ph||"")}" value="${esc(f.value||"")}">`).join("")}<button class="formbtn" data-save>Opslaan</button><button class="ghostbtn" data-cancel>Annuleren</button></div>`;
+  const ins=[...row.querySelectorAll("input")];
+  const save=()=>{const vals=ins.map(i=>i.value.trim());if(!vals[0])return;onSave(vals);rerender();};
+  row.querySelector("[data-save]").addEventListener("click",save);
+  row.querySelector("[data-cancel]").addEventListener("click",rerender);
+  ins.forEach(i=>i.addEventListener("keydown",e=>{if(e.key==="Enter")save();if(e.key==="Escape")rerender();}));
+  ins[0].focus();const n=ins[0].value.length;ins[0].setSelectionRange(n,n);
 }

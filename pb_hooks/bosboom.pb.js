@@ -8,6 +8,12 @@ onRecordCreateRequest((e) => {
   e.next();
 });
 
+// Bewerken via de app (eigen opmerking, naam blijft staan)
+onRecordUpdateRequest((e) => {
+  require(`${__hooks}/bosboom_lib.js`).requestUpdate(e);
+  e.next();
+});
+
 // Huisregels bij elke opslag
 onRecordCreate((e) => {
   const L = require(`${__hooks}/bosboom_lib.js`);

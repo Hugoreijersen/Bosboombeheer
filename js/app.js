@@ -13,17 +13,22 @@ async function persistMeal(name,off,d){
   await db.upsert("meals",{day:mealKey(off,d),resident_id:nameToId(name),status:wk.status[name][d]||"",guests:wk.guests[name][d]||0},["day","resident_id"]).catch(showError);
 }
 const idOrNull=p=>p.then(r=>r?r.id:null).catch(e=>{showError(e);return null;});
+// De server zet zelf de naam van wie ingelogd is bij een opmerking; we sturen hem mee zodat het scherm meteen klopt.
 const persistNoteAdd=(off,d,author,text)=>idOrNull(db.insert("day_notes",{day:mealKey(off,d),author,text}));
+async function persistNoteEdit(id,text){ if(id) await db.update("day_notes",{id},{text}).catch(showError); }
 async function persistNoteDel(id){ if(id) await db.remove("day_notes",{id}).catch(showError); }
 async function persistChore(id,fields){ await db.update("chores",{id},fields).catch(showError); }
 // Elke "Klaar" komt in het logboek, zodat de statistieken weten wie er schoonmaakte.
 async function logChore(c,doneBy){ await db.insert("chore_log",{chore_id:c.id,task:c.task,done_by:nameToId(doneBy),done_at:toInput(TODAY)}).catch(showError); }
 const persistShopAdd=text=>idOrNull(db.insert("shopping",{text}));
 async function persistShopToggle(id,done){ if(id) await db.update("shopping",{id},{done}).catch(showError); }
+async function persistShopEdit(id,text){ if(id) await db.update("shopping",{id},{text}).catch(showError); }
 async function persistShopDel(id){ if(id) await db.remove("shopping",{id}).catch(showError); }
 const persistRecipeAdd=r0=>idOrNull(db.insert("recipes",{title:r0.title,time_min:r0.time?parseInt(r0.time,10):null,ingredients:r0.ing,steps:r0.steps}));
+async function persistRecipeEdit(r0){ if(r0.id) await db.update("recipes",{id:r0.id},{title:r0.title,time_min:r0.time?parseInt(r0.time,10):null,ingredients:r0.ing,steps:r0.steps}).catch(showError); }
 async function persistRecipeDel(id){ if(id) await db.remove("recipes",{id}).catch(showError); }
 const persistQuoteAdd=(text,author)=>idOrNull(db.insert("quotes",{text,author}));
+async function persistQuoteEdit(id,text,author){ if(id) await db.update("quotes",{id},{text,author}).catch(showError); }
 async function persistQuoteDel(id){ if(id) await db.remove("quotes",{id}).catch(showError); }
 
 // --- alles inladen ---
