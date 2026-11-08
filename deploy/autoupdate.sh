@@ -9,7 +9,10 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 OWNER="$(stat -c %U "$REPO")"   # de gebruiker van de repo (bosboombeheer): git draait als die
 [ "$(id -u)" = 0 ] || { echo "Draai dit met sudo."; exit 1; }
-as_owner(){ runuser -u "$OWNER" -- "$@"; }
+# setpriv in plaats van runuser/sudo: die schrijven bij elke aanroep "session opened/closed" in het logboek.
+OWNER_HOME="$(getent passwd "$OWNER" | cut -d: -f6)"
+as_owner(){ setpriv --reuid="$(id -u "$OWNER")" --regid="$(id -g "$OWNER")" --init-groups \
+  env HOME="$OWNER_HOME" USER="$OWNER" "$@"; }
 git_(){ as_owner git -C "$REPO" "$@"; }
 
 branch="$(git_ rev-parse --abbrev-ref HEAD)"
