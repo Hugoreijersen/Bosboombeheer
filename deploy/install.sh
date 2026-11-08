@@ -83,12 +83,27 @@ EOF
 systemctl daemon-reload
 systemctl enable --now bosboom-update.timer >/dev/null
 
-if ! sudo -u bosboom "$BASE/pocketbase" superuser list --dir="$BASE/pb_data" 2>/dev/null | grep -q @; then
+# Is er al een beheerder? PocketBase heeft geen "superuser list", dus kijken we in de database.
+# (__pbinstaller@example.com is een tijdelijke die PocketBase zelf maakt: die telt niet.)
+has_admin(){
+  python3 - "$BASE/pb_data/data.db" <<'PY' 2>/dev/null
+import sqlite3, sys
+db = sqlite3.connect(f"file:{sys.argv[1]}?mode=ro", uri=True)
+n = db.execute("select count(*) from _superusers where email not like '__pbinstaller%'").fetchone()[0]
+sys.exit(0 if n else 1)
+PY
+}
+if ! has_admin; then
   echo
-  echo "==> Nog geen beheerder. Maak er een (alleen voor het beheerscherm, niet voor de app):"
-  read -r -p "   E-mail: " ADMIN_EMAIL
-  read -r -s -p "   Wachtwoord (min. 10 tekens): " ADMIN_PASS; echo
-  sudo -u bosboom "$BASE/pocketbase" superuser upsert "$ADMIN_EMAIL" "$ADMIN_PASS" --dir="$BASE/pb_data"
+  if [ -t 0 ]; then
+    echo "==> Nog geen beheerder. Maak er een (alleen voor het beheerscherm, niet voor de app):"
+    read -r -p "   E-mail: " ADMIN_EMAIL
+    read -r -s -p "   Wachtwoord (min. 10 tekens): " ADMIN_PASS; echo
+    sudo -u bosboom "$BASE/pocketbase" superuser upsert "$ADMIN_EMAIL" "$ADMIN_PASS" --dir="$BASE/pb_data"
+  else
+    # Automatisch bijwerken (geen toetsenbord): niet vragen en niet mislukken.
+    echo "==> Nog geen beheerder gevonden. Draai zelf een keer: sudo ./deploy/install.sh"
+  fi
 fi
 
 IP="$(hostname -I | awk '{print $1}')"
