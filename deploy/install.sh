@@ -58,6 +58,31 @@ systemctl restart bosboom
 sleep 2
 systemctl --no-pager --lines=0 status bosboom || true
 
+echo "==> Automatisch bijwerken (elke 2 minuten kijken of er iets nieuws op main staat)"
+cat > /etc/systemd/system/bosboom-update.service <<EOF
+[Unit]
+Description=De Bosboom bijwerken vanaf GitHub
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=$REPO/deploy/autoupdate.sh
+EOF
+cat > /etc/systemd/system/bosboom-update.timer <<EOF
+[Unit]
+Description=De Bosboom elke 2 minuten bijwerken vanaf GitHub
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=2min
+
+[Install]
+WantedBy=timers.target
+EOF
+systemctl daemon-reload
+systemctl enable --now bosboom-update.timer >/dev/null
+
 if ! sudo -u bosboom "$BASE/pocketbase" superuser list --dir="$BASE/pb_data" 2>/dev/null | grep -q @; then
   echo
   echo "==> Nog geen beheerder. Maak er een (alleen voor het beheerscherm, niet voor de app):"
