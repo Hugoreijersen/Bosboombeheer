@@ -53,6 +53,26 @@ De eerste keer log je in bij Tailscale (gratis) en zet je Funnel aan via de link
 Zet de link daarna in het beheerscherm bij Settings > Application URL.
 Uitzetten: `sudo tailscale funnel --https=443 off`.
 
+## 4. Op je eigen domein (berkeikiep.nl, Cloudflare Tunnel)
+
+In plaats van (of naast) de Funnel-link. De Pi maakt zelf verbinding met Cloudflare, dus geen
+poorten in de router. Eenmalig in het Cloudflare-dashboard:
+
+1. **Workers & Pages > bosboombeheer > Settings > Domains & Routes**: haal `berkeikiep.nl` weg
+   (daar stond de oude versie zonder database).
+2. **Zero Trust > Networks > Tunnels > Create a tunnel** (Cloudflared), naam `bosboom`.
+   Kopieer de token uit het voorbeeldcommando.
+3. **Public hostname**: `berkeikiep.nl`, service **HTTP**, URL `localhost:8090`.
+
+Dan op de Pi:
+
+```bash
+sudo ./deploy/tunnel.sh <token>
+```
+
+Zet daarna `https://berkeikiep.nl` in het beheerscherm bij Settings > Application URL.
+De token is geheim: niet in de repo of een chat zetten.
+
 ## Updaten
 
 ```bash
