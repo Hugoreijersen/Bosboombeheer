@@ -75,9 +75,19 @@ De token is geheim: niet in de repo of een chat zetten.
 
 ## Updaten
 
+Dat gaat vanzelf: elke 2 minuten kijkt de Pi of er iets nieuws op `main` staat. Zo ja, dan
+haalt hij het op, draait `install.sh` en herlaadt de kiosk. Een merge op GitHub staat dus
+binnen een paar minuten live, ook op berkeikiep.nl. Dit zet `install.sh` aan (de timer
+`bosboom-update`), dus na de eerste keer hoef je niets meer te doen.
+
 ```bash
-cd ~/Bosboombeheer && git pull && sudo ./deploy/install.sh
+journalctl -u bosboom-update -n 20             # wat deed hij de laatste keren?
+sudo ./deploy/autoupdate.sh                    # nu meteen bijwerken
+sudo systemctl disable --now bosboom-update.timer   # automatisch bijwerken uitzetten
 ```
+
+Hij werkt niet bij als de repo op de Pi lokale wijzigingen heeft of niet op `main` staat;
+dat staat dan in het logboek. Is `deploy/kiosk.sh` veranderd, draai dan zelf nog `./deploy/kiosk.sh`.
 
 Nieuwe tabellen of velden komen in `pb_migrations/` en worden bij de herstart vanzelf toegepast.
 

@@ -51,8 +51,8 @@ this prototype. Don't copy code or decisions between them unless Hugo asks.
    PocketBase into a cache dir and serves on http://localhost:8090 with a throwaway database.
 2. Tests: `node tests/rules.test.js` and `PB_BIN=<pocketbase> node tests/pb.test.mjs`.
 3. Open a PR; Hugo merges.
-4. On the Pi: `cd ~/Bosboombeheer && git pull && sudo ./deploy/install.sh` (plus `./deploy/kiosk.sh` when that
-   script changed).
+4. The Pi updates itself: timer `bosboom-update` (set up by `install.sh`) runs `deploy/autoupdate.sh` every 2 minutes,
+   which pulls main, runs `install.sh` and reloads the kiosk. Run `./deploy/kiosk.sh` by hand when that script changed.
 
 ## Rules
 
