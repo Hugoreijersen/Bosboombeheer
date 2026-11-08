@@ -19,23 +19,12 @@ function tree(kind,c,season){
   return `<svg width="58" height="68" viewBox="0 0 64 76" aria-hidden="true">${content}</svg>`;}
 
 const treesEl=document.getElementById("trees");
-const mandarinKey="bosboom-mandarijn-home";
-function getMandarinHome(){
-  try{
-    const value=localStorage.getItem(mandarinKey);
-    return value === "1" || value === "true";
-  }catch(e){
-    return false;
-  }
-}
-function setMandarinHome(next){
-  state.home.Mandarijn = Boolean(next);
-  try{localStorage.setItem(mandarinKey, next ? "1" : "0");}catch(e){}
-}
-function toggleMandarinHome(){
-  setMandarinHome(!state.home.Mandarijn);
-  renderTrees();
-}
+// Wie er bij een boom hoort (logeert vaak): een eigen thuis/weg-knopje in die kaart, gedeeld via de database.
+const PARTNERS={Berk:"Mandarijn"};
+const mandarijnSVG=`<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 9.5c-1-2.6-3.6-4.2-6.6-3.8 1 2.8 3.6 4.3 6.6 3.8z" fill="#5f8f4b"/>
+  <ellipse cx="16" cy="19" rx="11" ry="10" fill="#e8902b"/><ellipse cx="16" cy="19" rx="11" ry="10" fill="none" stroke="#c46f17" stroke-width="1.2"/>
+  <path d="M16 9.6v2.4" stroke="#6b4a2a" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="11.5" cy="15.5" rx="3" ry="2" fill="#fff" opacity=".35"/></svg>`;
+function togglePartner(name){ state.partner[name]=!state.partner[name]; renderTrees(); persistPartner(name); }
 function toggleHome(name){ if(state.home[name]){state.home[name]=false;state.away[name]="";} else {state.home[name]=true;} renderTrees(); persistHome(name); }
 function renderTrees(){
   treesEl.innerHTML="";
@@ -49,26 +38,14 @@ function renderTrees(){
       ["click","mousedown","keydown"].forEach(ev=>inp.addEventListener(ev,e=>e.stopPropagation()));
       inp.addEventListener("input",()=>state.away[p.name]=inp.value);
       inp.addEventListener("change",()=>persistAway(p.name,inp.value));card.appendChild(inp);}
-    if(p.name==="Berk"){
-      const mandarinBox=document.createElement("div");
-      mandarinBox.className=`mandarin-box${state.home.Mandarijn ? " on" : ""}`;
-      mandarinBox.innerHTML=`<svg class="mandarin-fruit" width="24" height="24" viewBox="0 0 40 40" aria-hidden="true">
-        <g fill="${state.home.Mandarijn ? "#d98b2d" : "#d7d1c5"}">
-          <circle cx="20" cy="20" r="11"/>
-          <circle cx="16" cy="15" r="2.2" fill="rgba(255,255,255,.45)"/>
-          <circle cx="23" cy="24" r="2.2" fill="rgba(255,255,255,.45)"/>
-          <path d="M20 5 L22 11 L18 11 Z" fill="#5f8f4b"/>
-          <path d="M20 3 C22 7, 24 8, 26 8" stroke="#5f8f4b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-          <path d="M20 3 C18 7, 16 8, 14 8" stroke="#5f8f4b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-        </g>
-      </svg><div class="mandarin-status">${state.home.Mandarijn ? "thuis" : "weg"}</div>`;
-      mandarinBox.addEventListener("click",e=>{e.stopPropagation();toggleMandarinHome();});
-      mandarinBox.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();toggleMandarinHome();}});
-      mandarinBox.setAttribute("role","button");mandarinBox.tabIndex=0;mandarinBox.setAttribute("aria-pressed",String(state.home.Mandarijn));
-      card.appendChild(mandarinBox);
-      card.classList.add("berk-has-mandarijn");
-    }
+    const pn=PARTNERS[p.name];
+    if(pn){const on=!!state.partner[p.name],btn=document.createElement("button");
+      btn.type="button";btn.className="partner"+(on?" on":"");btn.setAttribute("aria-pressed",String(on));
+      btn.setAttribute("aria-label",`${pn} is ${on?"thuis":"weg"}`);btn.title=`${pn}: tik om ${on?"weg":"thuis"} te zetten`;
+      btn.innerHTML=`${mandarijnSVG}<span>${pn}</span>`;
+      btn.addEventListener("click",e=>{e.stopPropagation();togglePartner(p.name);});
+      btn.addEventListener("keydown",e=>e.stopPropagation());
+      card.appendChild(btn);}
     treesEl.appendChild(card);});
 }
-state.home.Mandarijn = getMandarinHome();
 renderTrees();

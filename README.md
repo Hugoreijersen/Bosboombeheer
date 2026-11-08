@@ -29,6 +29,7 @@ sql/01_schema.sql              de database-tabellen + startdata
 sql/02_auth_and_policies.sql   login-koppeling + toegangsregels (security)
 sql/03_huispot_features.sql    tabellen en regels voor de nieuwe secties
 sql/04_eten_kosten.sql         boodschappen van de kok -> DeeldeDuit
+sql/05_partner_home.sql        Mandarijn (bij Berk) thuis of weg
 tests/                         node tests/rules.test.js  en  PB_BIN=pocketbase node tests/pb.test.mjs
 ```
 

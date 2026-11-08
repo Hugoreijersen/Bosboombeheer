@@ -226,3 +226,14 @@ html.kiosk .tabbar .ti,html.kiosk .tree-card[data-home="false"] svg{filter:none;
 /* kiosk: slepen = scrollen (js/vegen.js), dus geen tekst selecteren */
 html.kiosk body{-webkit-user-select:none;user-select:none;}
 html.kiosk input,html.kiosk textarea{-webkit-user-select:text;user-select:text;}
+
+/* ---------- iemand die bij een boom hoort (Mandarijn bij Berk) ---------- */
+.partner{appearance:none;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px 3px 4px;border-radius:999px;border:1px dashed var(--line);background:transparent;
+  color:var(--muted);font-size:.72rem;font-weight:700;line-height:1;transition:all .15s ease;}
+.partner svg{width:20px;height:20px;flex:none;filter:grayscale(1);opacity:.45;transition:all .15s ease;}
+.partner.on{border:1px solid #e8902b;background:var(--amber-soft);color:var(--amber);}
+.partner.on svg{filter:none;opacity:1;}
+.partner:focus-visible{outline:3px solid var(--moss);outline-offset:2px;}
+html.kiosk .partner{padding:5px 12px 5px 6px;font-size:.8rem;}
+html.kiosk .partner svg{width:24px;height:24px;}
