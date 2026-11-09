@@ -4,20 +4,36 @@
 // Afrekenen en "betaald" zetten gaan via server-functies, zodat niemand een afrekening kan vervalsen.
 (()=>{
   const el=document.getElementById("duit"),sub=document.getElementById("duitSub");
-  const S={open:[],shares:[],settlements:[],transfers:[],form:null,preview:false};
+  const PAGE=12;
+  // limit: hoeveel afrekeningen we tonen ("Oudere afrekeningen" haalt er meer bij).
+  // shown: de afrekening die is opengeklapt, met zijn uitgaven in past.
+  const S={open:[],shares:[],settlements:[],transfers:[],form:null,preview:false,limit:PAGE,more:false,shown:null,past:null};
 
   async function load(){
     const [open,sets]=await Promise.all([
       db.list("expenses",{where:{settlement_id:null},order:["spent_on","created_at"],desc:true}),
-      db.list("settlements",{order:"created_at",desc:true,limit:12}),
+      db.list("settlements",{order:"created_at",desc:true,limit:S.limit+1}),
     ]);
+    const more=sets.length>S.limit;if(more)sets.length=S.limit;
     const [shares,transfers]=await Promise.all([
       open.length?db.list("expense_shares",{where:{expense_id:open.map(e=>e.id)}}):[],
       sets.length?db.list("settlement_transfers",{where:{settlement_id:sets.map(s=>s.id)}}):[],
     ]);
-    Object.assign(S,{open,shares,settlements:sets,transfers});
+    Object.assign(S,{open,shares,settlements:sets,transfers,more});
+    if(S.shown&&!sets.some(s=>s.id===S.shown))S.shown=null;
+    S.past=S.shown?await expensesOf(S.shown):null;
   }
-  const sharesOf=e=>S.shares.filter(s=>s.expense_id===e.id);
+  // Uitgaven (met hun aandelen) van één afrekening, of met id=null alle open uitgaven.
+  async function expensesOf(settlementId){
+    const ex=await db.list("expenses",{where:{settlement_id:settlementId},order:["spent_on","created_at"],desc:true});
+    const sh=ex.length?await db.list("expense_shares",{where:{expense_id:ex.map(e=>e.id)}}):[];
+    return ex.map(e=>({...e,shares:sh.filter(s=>s.expense_id===e.id)}));
+  }
+  const sharesOf=e=>e.shares||S.shares.filter(s=>s.expense_id===e.id);
+  const whoOf=e=>{const sh=sharesOf(e);
+    return residentIds.filter(id=>sh.some(s=>s.resident_id===id)).map(id=>{const n=sh.find(s=>s.resident_id===id).shares;return personOf(id).name+(n>1?` ${n}×`:"");}).join(", ");};
+  const expSub=e=>`${dotHTML(e.payer)}${personOf(e.payer).name} ${e.kind==="ontvangen"?"ontving":"betaalde"} · ${dayLabel(fromInput(e.spent_on))} · voor ${whoOf(e)}`;
+  const expTitle=e=>`${esc(e.description)} ${e.kind==="ontvangen"?`<span class="pill amber">ontvangen</span>`:""}`;
   const balances=()=>rules.balances(S.open.map(e=>({...e,shares:sharesOf(e)})),residentIds);
   const blankForm=()=>({id:null,desc:"",amount:"",payer:myResidentId||residentIds[0],kind:"betaald",date:toInput(TODAY),shares:Object.fromEntries(residentIds.map(id=>[id,1]))});
   const money=(c,signed)=>`<span class="money ${c>0?"pos":c<0?"neg":""}">${rules.euro(c,signed)}</span>`;
@@ -47,19 +63,27 @@
     </div></div>`;}
   function listHTML(){
     if(!S.open.length)return `<div class="card"><div class="empty">Geen open uitgaven. Alles is verrekend.</div></div>`;
-    return `<div class="card">${S.open.map(e=>{const sh=sharesOf(e);
-      const who=residentIds.filter(id=>sh.some(s=>s.resident_id===id)).map(id=>{const n=sh.find(s=>s.resident_id===id).shares;return personOf(id).name+(n>1?` ${n}×`:"");}).join(", ");
-      return `<div class="row"><div class="row-main" data-edit="${e.id}" style="cursor:pointer"><div class="row-title">${esc(e.description)} ${e.kind==="ontvangen"?`<span class="pill amber">ontvangen</span>`:""}</div>
-        <div class="row-sub">${dotHTML(e.payer)}${personOf(e.payer).name} ${e.kind==="ontvangen"?"ontving":"betaalde"} · ${dayLabel(fromInput(e.spent_on))} · voor ${who}</div></div>
-        <span class="money">${rules.euro(e.amount_cents)}</span><button class="iconbtn" data-del="${e.id}" aria-label="Verwijder">✕</button></div>`;}).join("")}</div>`;
+    return `<div class="card">${S.open.map(e=>`<div class="row"><div class="row-main" data-edit="${e.id}" style="cursor:pointer"><div class="row-title">${expTitle(e)}</div>
+        <div class="row-sub">${expSub(e)}</div></div>
+        <span class="money">${rules.euro(e.amount_cents)}</span><button class="iconbtn" data-del="${e.id}" aria-label="Verwijder">✕</button></div>`).join("")}</div>`;
   }
   function historyHTML(){
     if(!S.settlements.length)return "";
     return `<h3 class="duit-h">Afrekeningen</h3><div class="card">${S.settlements.map(s=>{const tr=S.transfers.filter(t=>t.settlement_id===s.id);const anyPaid=tr.some(t=>t.paid_at);
       return `<div class="row" style="align-items:flex-start"><div class="row-main"><div class="row-title">${dayLabel(new Date(s.created_at))} ${tr.length&&tr.every(t=>t.paid_at)?`<span class="pill moss">alles betaald</span>`:""}</div>
         ${tr.map(t=>`<div class="transfer ${t.paid_at?"paid":""}" style="margin-top:6px">${dotHTML(t.from_id)}${personOf(t.from_id).name} → ${dotHTML(t.to_id)}${personOf(t.to_id).name} ${money(t.amount_cents)}
-          <button class="chip" data-paid="${t.id}" aria-pressed="${!!t.paid_at}">${t.paid_at?"✓ betaald":"betaald?"}</button></div>`).join("")||`<div class="row-sub">Niemand hoefde iets over te maken.</div>`}</div>
-        ${anyPaid?"":`<button class="linkbtn rust" data-undo="${s.id}">terugdraaien</button>`}</div>`;}).join("")}</div>`;
+          <button class="chip" data-paid="${t.id}" aria-pressed="${!!t.paid_at}">${t.paid_at?"✓ betaald":"betaald?"}</button></div>`).join("")||`<div class="row-sub">Niemand hoefde iets over te maken.</div>`}
+          <button class="linkbtn" data-show="${s.id}" aria-expanded="${S.shown===s.id}" style="margin-top:6px">${S.shown===s.id?"uitgaven verbergen":"uitgaven bekijken"}</button>
+          ${S.shown===s.id?pastHTML():""}</div>
+        ${anyPaid?"":`<button class="linkbtn rust" data-undo="${s.id}">terugdraaien</button>`}</div>`;}).join("")}</div>
+      <div class="actions">${S.more?`<button class="btn" id="xMore">Oudere afrekeningen</button>`:""}${scherm.kiosk?"":`<button class="ghostbtn" id="xCsv">Alles downloaden (CSV)</button>`}</div>`;
+  }
+  // De uitgaven van een afgerekende afrekening: alleen bekijken, niet meer wijzigen.
+  function pastHTML(){
+    if(!S.past)return `<div class="row-sub">Laden…</div>`;
+    if(!S.past.length)return `<div class="row-sub">Geen uitgaven.</div>`;
+    return `<div class="past">${S.past.map(e=>`<div class="past-row"><div class="row-main"><div class="row-title">${expTitle(e)}</div><div class="row-sub">${expSub(e)}</div></div><span class="money">${rules.euro(e.amount_cents)}</span></div>`).join("")}
+      <div class="past-row"><div class="row-main"><b>Totaal</b></div><span class="money">${rules.euro(S.past.reduce((t,e)=>t+(e.kind==="ontvangen"?-1:1)*e.amount_cents,0),false)}</span></div></div>`;
   }
 
   function renderSub(){
@@ -90,6 +114,9 @@
     on("[data-del]",b=>confirmTap(b,()=>del(b.dataset.del)));
     on("[data-paid]",b=>paid(b.dataset.paid,b.getAttribute("aria-pressed")!=="true"));
     on("[data-undo]",b=>confirmTap(b,()=>undo(b.dataset.undo)));
+    on("[data-show]",b=>show(b.dataset.show));
+    on("#xMore",async()=>{S.limit+=PAGE;await load();render(true);});
+    on("#xCsv",csv);
     on("#xPreview",()=>{S.preview=true;render(true);});
     on("#xNoSettle",()=>{S.preview=false;render(true);});
     on("#xSettle",settle);
@@ -115,6 +142,27 @@
   async function del(id){try{await db.remove("expenses",{id});if(S.form&&S.form.id===id)S.form=blankForm();await load();render(true);}catch(e){showError(e);}}
   async function settle(){try{await db.call("settle_expenses",{});S.preview=false;await load();render(true);toast("Afgerekend. Zet een overboeking op betaald zodra het geld binnen is.");}catch(e){showError(e);}}
   async function paid(id,on){try{await db.call("mark_transfer_paid",{p_transfer:id,p_paid:on});await load();render(true);}catch(e){showError(e);}}
+  async function show(id){
+    S.shown=S.shown===id?null:id;S.past=null;render(true);
+    if(!S.shown)return;
+    try{const past=await expensesOf(id);if(S.shown===id){S.past=past;render(true);}}catch(e){showError(e);}
+  }
+  // De hele geschiedenis als CSV (opent in Excel/Numbers/Sheets): elke uitgave met wie meededen en wanneer afgerekend.
+  async function csv(){
+    try{
+      const [ex,sh,sets]=await Promise.all([db.list("expenses",{order:["spent_on","created_at"]}),db.list("expense_shares"),db.list("settlements")]);
+      const when=Object.fromEntries(sets.map(s=>[s.id,toInput(new Date(s.created_at))]));
+      const cell=v=>{v=String(v);if(/^[=+\-@]/.test(v))v="'"+v;   // geen formules in Excel
+        return /[";\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v;};
+      const lines=[["Datum","Omschrijving","Soort","Door","Bedrag","Deelnemers","Afgerekend op"],
+        ...ex.map(e=>[e.spent_on,e.description,e.kind,personOf(e.payer).name,(e.amount_cents/100).toFixed(2).replace(".",","),
+          whoOf({...e,shares:sh.filter(s=>s.expense_id===e.id)}),e.settlement_id?(when[e.settlement_id]||""):"open"])];
+      // Puntkomma's en een BOM: zo opent Excel met Nederlandse instellingen het goed.
+      const blob=new Blob(["\ufeff"+lines.map(r=>r.map(cell).join(";")).join("\r\n")],{type:"text/csv;charset=utf-8"});
+      const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`deeldeduit-${toInput(TODAY)}.csv`;
+      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    }catch(e){showError(e);}
+  }
   async function undo(id){try{await db.call("undo_settlement",{p_settlement:id});await load();render(true);}catch(e){showError(e);}}
 
   tabHooks.duit=async()=>{render(true);await load();render(true);};
