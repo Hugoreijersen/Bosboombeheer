@@ -34,9 +34,15 @@ function myResident(app, authId) {
   try { return app.findRecordById("profiles", authId).getString("resident_id"); } catch (_) { return ""; }
 }
 
-// Naam van de ingelogde bewoner ("Iep"), voor opmerkingen. Leeg als je (nog) geen boom hebt.
+// Het huisaccount (gedeeld scherm) heet "Huis"; het is geen bewoner.
+const HUIS = "Huis";
+// Naam van wie ingelogd is ("Iep", of "Huis"), voor opmerkingen. Leeg als je (nog) geen boom hebt.
 function myName(app, authId) {
-  const rid = myResident(app, authId);
+  if (!authId) return "";
+  let prof;
+  try { prof = app.findRecordById("profiles", authId); } catch (_) { return ""; }
+  if (prof.getBool("huis")) return HUIS;
+  const rid = prof.getString("resident_id");
   if (!rid) return "";
   try { return app.findRecordById("residents", rid).getString("name"); } catch (_) { return ""; }
 }
@@ -139,6 +145,9 @@ function beforeSave(app, rec, isNew) {
   }
 
   if (name === "settlement_transfers") normTimes(rec, ["paid_at"]);
+
+  // Het huisaccount hoort bij niemand: nooit tegelijk een boom.
+  if (name === "profiles" && rec.getBool("huis")) rec.set("resident_id", "");
 }
 
 function afterSave(app, rec, isNew) {

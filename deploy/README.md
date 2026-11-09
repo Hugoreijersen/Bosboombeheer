@@ -24,6 +24,8 @@ Dat script:
 Daarna: de app op `http://<ip-van-de-pi>:8090/` (of `http://<naam>.local:8090/`),
 het beheerscherm op `http://<ip-van-de-pi>:8090/_/`.
 Iedere huisgenoot maakt in de app een account en claimt zijn boom, net als voorheen.
+Log op het touchscreen in met het **huisaccount** (een eigen e-mailadres, en bij de keuze
+"Huisaccount" in plaats van een boom), zodat het scherm van niemand persoonlijk is.
 
 ## 2. Kiosk op het touchscreen
 

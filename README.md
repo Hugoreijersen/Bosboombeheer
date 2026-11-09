@@ -43,6 +43,9 @@ rechtstreeks mee. Alles draait dus lokaal, zonder cloud-database.
    Wachtwoorden staan nooit in deze code; PocketBase bewaart ze versleuteld.
 2. **Boom claimen** — bij de eerste login kies je welke boom je bent (Iep/Berk/Eik).
    Dat wordt opgeslagen in de tabel `profiles` (één boom per persoon).
+   Voor het touchscreen in huis is er één **huisaccount**: een login die bij niemand hoort
+   (kies "Huisaccount" in plaats van een boom). Opmerkingen staan dan op naam van "Huis",
+   en DeeldeDuit toont wat er in het hele huis nog openstaat.
 3. **Inladen** — bij openen haalt de app de huidige stand op uit de database (`loadAll`).
 4. **Opslaan** — elke actie schrijft naar de database (bv. `persistHome` voor thuis/weg).
 5. **Realtime** — wijzigt iemand iets, dan werken de andere apparaten binnen een seconde bij.
@@ -95,7 +98,7 @@ De Supabase-SQL in `sql/` is de specificatie die `pb_migrations/` en `pb_hooks/`
 | `recipes`    | recepten                                        |
 | `quotes`     | quotes                                          |
 | `plans`      | weekendplannen (per dag per persoon)            |
-| `profiles`   | koppeling ingelogde gebruiker → boom            |
+| `profiles`   | koppeling ingelogde gebruiker → boom (of `huis`)|
 | `chore_log`  | logboek: wie maakte wanneer wat schoon          |
 | `events`, `event_rsvp` | agenda + wie er komt                  |
 | `dib_items`, `dib_claims` | dingen om te dibsen + claims       |

@@ -22,7 +22,7 @@ const scherm=(()=>{
 
   function apply(){
     document.documentElement.classList.toggle("kiosk",mode==="kiosk");
-    const out=document.getElementById("logoutBtn"); if(out&&typeof myResidentId!=="undefined"&&myResidentId)out.hidden=mode==="kiosk";
+    const out=document.getElementById("logoutBtn"); if(out&&typeof myResidentId!=="undefined"&&(myResidentId||isHuis))out.hidden=mode==="kiosk";
     document.querySelectorAll("#schermPick [data-m]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===mode));
     poke();
     if(typeof refreshFooters==="function")refreshFooters();   // kookkosten-veld wel/niet

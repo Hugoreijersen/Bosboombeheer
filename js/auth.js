@@ -28,7 +28,8 @@ async function doAuth(){
 async function afterLogin(){
   const user=await db.auth.user();
   const [prof]=await db.list("profiles",{where:{id:user.id}});
-  if(prof&&prof.resident_id){ myResidentId=prof.resident_id; await startApp(); }
+  if(prof&&prof.huis){ isHuis=true; myResidentId=null; await startApp(); }
+  else if(prof&&prof.resident_id){ myResidentId=prof.resident_id; await startApp(); }
   else { await showClaim(); }
 }
 async function showClaim(){
@@ -45,6 +46,16 @@ async function showClaim(){
       myResidentId=id; await startApp();
     });
     host.appendChild(b);});
+  // Het huisaccount: voor het gedeelde scherm, van niemand. Er is er hooguit één.
+  const h=document.createElement("button");h.className="claim-tree claim-huis";h.disabled=taken.some(r=>r.huis);
+  h.innerHTML=`<span class="claim-huis-ico" aria-hidden="true">🏠</span><span>Huisaccount</span>`;
+  h.addEventListener("click",async()=>{
+    const user=await db.auth.user();
+    try{ await db.upsert("profiles",{id:user.id,huis:true,resident_id:null},["id"]); }
+    catch(e){showErr("Er is al een huisaccount — log daarmee in.");showClaim();return;}
+    isHuis=true; myResidentId=null; await startApp();
+  });
+  host.appendChild(h);
 }
 async function startApp(){ await loadAll(); renderAll(); subscribeLive(); const t=location.hash.slice(1); if(tabHooks[t]) tabHooks[t](); authEl.hidden=true; document.getElementById("logoutBtn").hidden=scherm.kiosk; }
 

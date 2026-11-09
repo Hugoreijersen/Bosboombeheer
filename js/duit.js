@@ -63,8 +63,9 @@
   }
 
   function renderSub(){
+    // Het huisaccount is niemand: dan wat er in het hele huis nog openstaat.
     const me=myResidentId,v=me?(balances()[me]||0):0;
-    const owe=S.transfers.filter(t=>!t.paid_at&&t.from_id===me).reduce((s,t)=>s+t.amount_cents,0);
+    const owe=S.transfers.filter(t=>!t.paid_at&&(isHuis||t.from_id===me)).reduce((s,t)=>s+t.amount_cents,0);
     sub.className="view-sub "+(owe||v<0?"neg":v>0?"pos":"");
     document.getElementById("duitBadge").hidden=!(owe||v<0);
     sub.textContent=owe?`Nog over te maken: ${rules.euro(owe)}`:v>0?`Jij krijgt ${rules.euro(v)}`:v<0?`Jij betaalt ${rules.euro(-v)}`:"Alles verrekend";

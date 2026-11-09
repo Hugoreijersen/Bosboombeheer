@@ -35,7 +35,9 @@ const state={
   plans:{},
 };
 let myResidentId=null;  // welke boom ben ik (na inloggen)
-const myName=()=>myResidentId?personOf(myResidentId).name:"";
+let isHuis=false;       // ingelogd met het huisaccount (gedeeld scherm, van niemand)
+const HUIS="Huis";
+const myName=()=>isHuis?HUIS:myResidentId?personOf(myResidentId).name:"";
 const W=off=>{const k=String(off);if(!state.weeks[k])state.weeks[k]=blankWeek();return state.weeks[k];};
 let weekOffset=0, selectedDay=todayIdx;
 let season=(()=>{const m=new Date().getMonth();return m>=2&&m<=4?"lente":m>=5&&m<=7?"zomer":m>=8&&m<=10?"herfst":"winter";})();
