@@ -93,7 +93,7 @@
     catch(e){showError(e);}
   }
   async function settle(){
-    const payer=S.payer||myResidentId;
+    const payer=S.payer||el.querySelector("#tPayer").value;
     try{await db.call("turf_afrekenen",{p_payer:payer});await load();render(true);
       toast(`Afgerekend: de strepen staan nu in DeeldeDuit, ${personOf(payer).name} krijgt het terug.`);}
     catch(e){showError(e);}

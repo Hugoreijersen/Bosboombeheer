@@ -84,6 +84,17 @@ try {
   ok("andermans opmerking bewerken", await code(berk.update("day_notes", { id: nt.id }, { text: "gehackt" })), "niet_jouw_opmerking");
   const zonder = client(); await zonder.auth.signUp("gast@bosboom.nl", "geheim123");
   ok("opmerking zonder boom", await code(zonder.insert("day_notes", { day: "2026-11-05", author: "Eik", text: "x" })), "geen_boom");
+  // ---------- huisaccount: van niemand, opmerkingen op naam van "Huis" ----------
+  const huis = client(); const uh = await huis.auth.signUp("huis@bosboom.nl", "geheim123");
+  const hp = await huis.upsert("profiles", { id: uh.id, huis: true, resident_id: "eik" }, ["id"]);
+  ok("huisaccount heeft geen boom", [hp.huis, hp.resident_id], [true, null]);
+  ok("tweede huisaccount", await code(zonder.upsert("profiles", { id: (await zonder.auth.user()).id, huis: true }, ["id"])), "bestaat_al");
+  const hn = await huis.insert("day_notes", { day: "2026-11-05", author: "Iep", text: "Pizza in de vriezer" });
+  ok("opmerking van het huis", hn.author, "Huis");
+  ok("huis bewerkt eigen opmerking", (await huis.update("day_notes", { id: hn.id }, { text: "Pizza op" }))[0].author, "Huis");
+  ok("bewoner bewerkt huis-opmerking niet", await code(iep.update("day_notes", { id: hn.id }, { text: "x" })), "niet_jouw_opmerking");
+  ok("huis bewerkt bewoner-opmerking niet", await code(huis.update("day_notes", { id: nt.id }, { text: "x" })), "niet_jouw_opmerking");
+  ok("huis ziet de data", (await huis.list("residents")).length, 3);
   const qt = await berk.insert("quotes", { text: "Hoi", author: "Eik" });
   ok("quote bewerken", (await iep.update("quotes", { id: qt.id }, { text: "Hallo", author: "Berk" }))[0].author, "Berk");
   const s = await iep.insert("shopping", { text: "Melk" });

@@ -68,6 +68,7 @@ this prototype. Don't copy code or decisions between them unless Hugo asks.
 
 ## Features (Hugo's explicit wishes — keep them)
 
+- **Huisaccount:** one shared login not tied to a person, for the kiosk (`profiles.huis`); its comments are by "Huis".
 - **Thuis:** one tree per housemate; tap the whole tile to toggle home/away; editable away label.
 - **Eten:** per person per day blank / Eet mee / Kookt / **Anders** (word "Anders", not "Niet"); cooking implies
   eating; several cooks allowed; guests as a number; deadline 17:00; day notes as `Naam: tekst`. The cook enters
