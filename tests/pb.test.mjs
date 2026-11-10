@@ -14,12 +14,44 @@ const PORT = 8000 + Math.floor(Math.random() * 900);
 const URL_ = `http://127.0.0.1:${PORT}`;
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "bosboom-pb-"));
 
+// Een nep-Spotify, zodat de afstandsbediening getest kan worden zonder echt account.
+import http from "node:http";
+const spot = { calls: [], tokens: 0, playing: false, volume: 40, expireNext: false, devices: [{ id: "nest1", name: "Bedroom speaker", is_active: true, is_restricted: false, volume_percent: 40 }] };
+const spotSrv = http.createServer((req, res) => {
+  let body = "";
+  req.on("data", (d) => (body += d));
+  req.on("end", () => {
+    const u = new URL(req.url, "http://x");
+    const send = (code, obj) => { res.writeHead(code, { "Content-Type": "application/json" }); res.end(obj ? JSON.stringify(obj) : ""); };
+    if (u.pathname === "/api/token") {
+      const f = new URLSearchParams(body);
+      spot.calls.push("token:" + f.get("grant_type"));
+      if (f.get("grant_type") === "authorization_code" && (f.get("code") !== "goede-code" || !f.get("code_verifier") || f.get("client_id") !== "a".repeat(32))) return send(400, { error: "invalid_grant" });
+      if (f.get("grant_type") === "refresh_token" && f.get("refresh_token") !== "ververs-1") return send(400, { error: "invalid_grant" });
+      return send(200, { access_token: "toegang-" + ++spot.tokens, refresh_token: "ververs-1", expires_in: 3600 });
+    }
+    const tok = (req.headers.authorization || "").replace("Bearer ", "");
+    if (tok !== "toegang-" + spot.tokens || spot.expireNext) { spot.expireNext = false; spot.tokens++; return send(401, { error: { status: 401, message: "expired" } }); }
+    spot.calls.push(req.method + " " + u.pathname + u.search + (body ? " " + body : ""));
+    if (u.pathname === "/v1/me/player" && req.method === "GET") return send(200, { is_playing: spot.playing, device: spot.devices[0], item: { name: "Liedje", artists: [{ name: "Band" }] } });
+    if (u.pathname === "/v1/me/player/devices") return send(200, { devices: spot.devices });
+    if (u.pathname === "/v1/me/playlists") return send(200, { items: [{ uri: "spotify:playlist:1", name: "Kooklijst" }, null] });
+    if (u.pathname === "/v1/me/player/play") { if (u.searchParams.get("device_id") === "weg") return send(404, { error: { status: 404, reason: "NO_ACTIVE_DEVICE" } }); spot.playing = true; return send(204); }
+    if (u.pathname === "/v1/me/player/pause") { spot.playing = false; return send(204); }
+    if (u.pathname === "/v1/me/player/volume") { spot.devices[0].volume_percent = Number(u.searchParams.get("volume_percent")); return send(204); }
+    return send(204);
+  });
+});
+await new Promise((r) => spotSrv.listen(0, "127.0.0.1", r));
+const SPOT_URL = `http://127.0.0.1:${spotSrv.address().port}`;
+
 const pbProc = spawn(BIN, ["serve", `--http=127.0.0.1:${PORT}`, `--dir=${dir}`,
-  `--migrationsDir=${ROOT}pb_migrations`, `--hooksDir=${ROOT}pb_hooks`, `--publicDir=${ROOT}`], { stdio: ["ignore", "pipe", "pipe"] });
+  `--migrationsDir=${ROOT}pb_migrations`, `--hooksDir=${ROOT}pb_hooks`, `--publicDir=${ROOT}`], { stdio: ["ignore", "pipe", "pipe"],
+  env: Object.assign({}, process.env, { SPOTIFY_ACCOUNTS_URL: SPOT_URL, SPOTIFY_API_URL: SPOT_URL }) });
 let log = "";
 pbProc.stdout.on("data", (d) => (log += d));
 pbProc.stderr.on("data", (d) => (log += d));
-const stop = () => { try { pbProc.kill(); } catch (_) {} fs.rmSync(dir, { recursive: true, force: true }); };
+const stop = () => { try { pbProc.kill(); } catch (_) {} try { spotSrv.close(); } catch (_) {} fs.rmSync(dir, { recursive: true, force: true }); };
 process.on("exit", stop);
 
 for (let i = 0; ; i++) {
@@ -205,6 +237,36 @@ try {
   ok("stats turf_marks", (await iep.list("turf_marks", { where: { created_at: { gte: "2026-01-01T00:00:00.000Z" } } })).length, 2);
   ok("stats expenses", (await iep.list("expenses", { where: { spent_on: { gte: "2026-11-01" }, kind: "betaald" } })).length, 4);
   ok("limit + desc", (await iep.list("quotes", { order: "created_at", desc: true, limit: 1 })).length, 1);
+
+  // ---------- Spotify-afstandsbediening (alleen het huisaccount) ----------
+  const sp = huis;
+  if (sp) {
+    ok("spotify: bewoner mag niet", await code(iep.call("spotify/state", {})), "geen_toegang");
+    ok("spotify: zonder login", await code(anon.call("spotify/state", {})), "geen_toegang");
+    ok("spotify: sleutels niet leesbaar", await code(sp.list("spotify")), "geen_toegang");
+    const s0 = await sp.call("spotify/state", {});
+    ok("spotify: nog niets", [s0.configured, s0.client_id, s0.connected, s0.player, s0.devices], [false, "", false, null, []]);
+    ok("spotify: fout client id", await code(sp.call("spotify/config", { client_id: "nee" })), "spotify_client_id");
+    await sp.call("spotify/config", { client_id: "a".repeat(32) });
+    ok("spotify: bedienen zonder koppeling", await code(sp.call("spotify/cmd", { action: "pause" })), "spotify_niet_gekoppeld");
+    ok("spotify: foute code", await code(sp.call("spotify/connect", { code: "fout", verifier: "v", redirect_uri: "https://x/" })), "spotify_opnieuw_koppelen");
+    await sp.call("spotify/connect", { code: "goede-code", verifier: "v", redirect_uri: "https://x/" });
+    const s1 = await sp.call("spotify/state", {});
+    ok("spotify: gekoppeld", [s1.connected, s1.player.title, s1.player.artist, s1.player.device_name, s1.player.volume, s1.devices.map((d) => [d.id, d.name, d.active])], [true, "Liedje", "Band", "Bedroom speaker", 40, [["nest1", "Bedroom speaker", true]]]);
+    ok("spotify: afspeellijsten", (await sp.call("spotify/playlists", {})).map((l) => [l.uri, l.name]), [["spotify:playlist:1", "Kooklijst"]]);
+    await sp.call("spotify/cmd", { action: "play", device_id: "nest1", uri: "spotify:playlist:1" });
+    ok("spotify: lijst gestart", spot.calls.at(-1), 'PUT /v1/me/player/play?device_id=nest1 {"context_uri":"spotify:playlist:1"}');
+    ok("spotify: speelt", (await sp.call("spotify/state", {})).player.is_playing, true);
+    await sp.call("spotify/cmd", { action: "volume", percent: 250 });
+    ok("spotify: volume begrensd", spot.devices[0].volume_percent, 100);
+    spot.expireNext = true;   // sleutel verlopen: de server ververst hem zelf en probeert opnieuw
+    await sp.call("spotify/cmd", { action: "pause" });
+    ok("spotify: ververst en gepauzeerd", [spot.playing, spot.calls.at(-2)], [false, "token:refresh_token"]);
+    ok("spotify: speaker weg", await code(sp.call("spotify/cmd", { action: "play", device_id: "weg" })), "spotify_geen_speaker");
+    ok("spotify: onbekende opdracht", await code(sp.call("spotify/cmd", { action: "dans" })), "niet_gevonden");
+    await sp.call("spotify/disconnect", {});
+    ok("spotify: ontkoppeld", (await sp.call("spotify/state", {})).connected, false);
+  }
 
   // ---------- de app zelf wordt geserveerd ----------
   ok("index.html", (await fetch(URL_ + "/")).status, 200);

@@ -28,8 +28,9 @@ const radio=(()=>{
     audio.play().catch(e=>{ if(e&&e.name==="AbortError")return; lost(); });
     render();
   }
-  function play(id){ current=STATIONS.find(s=>s.id===id)||null; retries=0; if(current)start(); }
+  function play(id){ current=STATIONS.find(s=>s.id===id)||null; retries=0; if(!current)return; start(); if(typeof spotify!=="undefined")spotify.yieldToRadio(); }
   function stop(){
+    if(!current&&status==="uit")return;
     clearTimeout(retryTimer); current=null; status="uit";
     audio.pause(); audio.removeAttribute("src"); audio.load();   // stopt ook het downloaden van de stream
     render();

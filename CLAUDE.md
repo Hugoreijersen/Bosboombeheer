@@ -78,6 +78,9 @@ this prototype. Don't copy code or decisions between them unless Hugo asks.
   **Boodschappen, Recepten, Quotes**. The rules are in `README.md` under "Huisregels".
 - **Radio** (`js/radio.js`): internet radio stations in a fifth tab, shown only on the huisaccount. One `<audio>`
   element in the kiosk browser; the Pi sends it to its default output (a Bluetooth speaker, paired by hand).
+- **Spotify remote** (`js/spotify.js`, `pb_hooks/spotify_lib.js`), under the radio: shows what plays and controls a
+  speaker that plays Spotify itself (the Nest). The Pi never plays Spotify (too heavy, and librespot is blocked for
+  this account). Linked once over https with PKCE; the tokens stay server-side in the locked `spotify` collection.
 - Week starts on **Sunday**. Seasons and weather (Open-Meteo) in the header.
 - UI: Dutch text, no subtitles under headings, whole tiles are hit targets, big tap targets.
 
