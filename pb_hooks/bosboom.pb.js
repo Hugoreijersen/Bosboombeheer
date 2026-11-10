@@ -44,3 +44,9 @@ onRecordDelete((e) => {
 routerAdd("POST", "/api/bosboom/{name}", (e) => {
   return e.json(200, require(`${__hooks}/bosboom_lib.js`).call(e));
 }, $apis.requireAuth("users"));
+
+// Spotify-afstandsbediening (alleen het huisaccount): POST /api/bosboom/spotify/{naam}
+// Los van de functies hierboven, want die draaien in een database-transactie en dit praat met Spotify.
+routerAdd("POST", "/api/bosboom/spotify/{name}", (e) => {
+  return e.json(200, require(`${__hooks}/spotify_lib.js`).call(e));
+}, $apis.requireAuth("users"));

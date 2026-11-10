@@ -31,7 +31,8 @@ const db = (() => {
 
   // Codes die de app kent. De server (pb_hooks) geeft ze als foutmelding terug.
   const CODES = ["huis_geclaimd", "dib_bezet", "kring_niet_aansluiten", "tijd_ongeldig", "te_lang", "al_afgerekend",
-    "niets_af_te_rekenen", "al_betaald", "item_niet_actief", "geen_deelnemers", "niet_gevonden", "soort_ongeldig", "bestaat_al", "niet_jouw_opmerking", "geen_boom"];
+    "niets_af_te_rekenen", "al_betaald", "item_niet_actief", "geen_deelnemers", "niet_gevonden", "soort_ongeldig", "bestaat_al", "niet_jouw_opmerking", "geen_boom",
+    "spotify_niet_gekoppeld", "spotify_opnieuw_koppelen", "spotify_geen_speaker", "spotify_premium", "spotify_te_druk", "spotify_client_id", "spotify_onbereikbaar"];
   function toError(e) {
     const res = (e && e.response) || {};
     const msg = res.message || (e && e.message) || String(e);

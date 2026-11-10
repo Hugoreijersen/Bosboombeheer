@@ -23,6 +23,7 @@ js/app.js                      inladen, opslaan, live bijwerken
 js/thuis.js eten.js schoonmaak.js lijsten.js sfeer.js    de oorspronkelijke secties
 js/agenda.js dibs.js streep.js duit.js stats.js          de nieuwe secties
 js/radio.js                    internetradio op de speaker van het scherm (alleen huisaccount)
+js/spotify.js                  Spotify-afstandsbediening in het Radio-tabblad (server: pb_hooks/spotify_lib.js)
 js/scherm.js                   schermstand: telefoon of kiosk (per apparaat)
 js/auth.js                     login en boom claimen; start de app (laatst geladen)
 sql/                           de oude Supabase-versie (blijft als naslag/specificatie)

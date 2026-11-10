@@ -75,6 +75,10 @@ const ERR={
   al_betaald:"Er is al iets betaald, dus terugdraaien kan niet meer.",
   item_niet_actief:"Dat drankje staat niet meer op de lijst.",geen_deelnemers:"Kies wie er meedoen.",
   geen_toegang:"Dat mag niet.",
+  spotify_niet_gekoppeld:"Spotify is nog niet gekoppeld.",spotify_opnieuw_koppelen:"Spotify moet opnieuw gekoppeld worden.",
+  spotify_geen_speaker:"Spotify ziet die speaker nu niet. Start hem één keer vanuit de Spotify-app.",
+  spotify_premium:"Hiervoor is Spotify Premium nodig.",spotify_te_druk:"Spotify heeft het even te druk. Probeer het zo nog eens.",
+  spotify_client_id:"Dat Client ID klopt niet.",spotify_onbereikbaar:"Spotify reageert nu niet.",
   niet_jouw_opmerking:"Je kunt alleen je eigen opmerkingen bewerken.",geen_boom:"Kies eerst je boom.",
 };
 const errText=e=>ERR[e&&e.code]||("Er ging iets mis: "+((e&&e.message)||e));
