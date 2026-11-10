@@ -94,3 +94,4 @@ this prototype. Don't copy code or decisions between them unless Hugo asks.
 
 - Decide whether sign-up should be closed now that the app is public on berkeikiep.nl.
 - `bosboom-live.html` is an old single-file copy from the Supabase era; remove it once Hugo agrees.
+- Back-ups staan alleen op de SD-kaart (Hugo's keuze); off-Pi via B2 staat klaar in `docs/later/`.
