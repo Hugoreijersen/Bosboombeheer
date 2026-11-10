@@ -19,6 +19,7 @@ async function persistNoteEdit(id,text){ if(id) await db.update("day_notes",{id}
 async function persistNoteDel(id){ if(id) await db.remove("day_notes",{id}).catch(showError); }
 async function persistChore(id,fields){ await db.update("chores",{id},fields).catch(showError); }
 // Elke "Klaar" komt in het logboek, zodat de statistieken weten wie er schoonmaakte.
+// De server zet zelf wie het deed (wie ingelogd is) en de datum van vandaag.
 async function logChore(c,doneBy){ await db.insert("chore_log",{chore_id:c.id,task:c.task,done_by:nameToId(doneBy),done_at:toInput(TODAY)}).catch(showError); }
 const persistShopAdd=text=>idOrNull(db.insert("shopping",{text}));
 async function persistShopToggle(id,done){ if(id) await db.update("shopping",{id},{done}).catch(showError); }
@@ -34,11 +35,12 @@ async function persistQuoteDel(id){ if(id) await db.remove("quotes",{id}).catch(
 // --- alles inladen ---
 function applyResidents(rows){ rows.forEach(r=>{const nm=idToName(r.id);state.home[nm]=r.is_home;state.away[nm]=r.away_label||"";}); }
 async function loadAll(){
-  const [res,meals,notes,ch,sh,rec,q]=await Promise.all([
+  const [res,meals,notes,ch,clog,sh,rec,q]=await Promise.all([
     db.list("residents",{order:"sort"}),
     db.list("meals"),
     db.list("day_notes",{order:"created_at"}),
     db.list("chores",{order:"sort"}),
+    db.list("chore_log",{order:["done_at","created_at"],desc:true,limit:60}).catch(e=>{console.warn("chore_log",e);return [];}),
     db.list("shopping",{order:"created_at"}),
     db.list("recipes",{order:"created_at"}),
     db.list("quotes",{order:"created_at",desc:true}),
@@ -49,6 +51,7 @@ async function loadAll(){
   const place=(dstr)=>{const d=fromInput(dstr);const td=Math.round((d-SUN0)/DAY);const off=Math.floor(td/7);return {wk:W(off),di:td-off*7};};
   meals.forEach(m=>{const{wk,di}=place(m.day);if(di<0||di>6)return;wk.status[idToName(m.resident_id)][di]=m.status||"";wk.guests[idToName(m.resident_id)][di]=m.guests||0;});
   notes.forEach(n=>{const{wk,di}=place(n.day);if(di<0||di>6)return;wk.dayNotes[di].push({text:n.text,by:n.author,id:n.id});});
+  state.choreLog=clog.map(l=>({chore:l.chore_id,task:l.task,by:idToName(l.done_by),at:fromInput(l.done_at)}));
   state.chores=ch.map(c=>({id:c.id,task:c.task,ritme:c.ritme,who:c.who,last:fromInput(c.last_done)}));
   state.shopping=sh.map(s=>({id:s.id,text:s.text,done:s.done}));
   state.recipes=rec.map(r=>({id:r.id,title:r.title,time:r.time_min==null?"":String(r.time_min),ing:r.ingredients||[],steps:r.steps||""}));
@@ -71,7 +74,7 @@ async function reloadResidents(){
 }
 function subscribeLive(){
   db.subscribe("residents",reloadResidents);
-  const tables=new Set(["meals","day_notes","chores","shopping","recipes","quotes"]);
+  const tables=new Set(["meals","day_notes","chores","chore_log","shopping","recipes","quotes"]);
   modules.forEach(m=>(m.tables||[]).forEach(t=>tables.add(t)));
   tables.forEach(t=>db.subscribe(t,syncFromDb));
 }
