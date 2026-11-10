@@ -15,6 +15,13 @@ as_owner(){ setpriv --reuid="$(id -u "$OWNER")" --regid="$(id -g "$OWNER")" --in
   env HOME="$OWNER_HOME" USER="$OWNER" "$@"; }
 git_(){ as_owner git -C "$REPO" "$@"; }
 
+# Vangnet voor de SD-kaart: Chromium laat bij elke start statistiekbestanden achter (BrowserMetrics).
+# De kiosk-lus ruimt ze op bij het starten, maar start de kiosk niet (scherm los, kaart vol), dan
+# blijven ze staan. Daarom hier ook, elke ronde en vóór git: dat werkt ook als de kaart al vol is.
+for d in "$OWNER_HOME"/.config/{bosboom-kiosk,chromium}/{BrowserMetrics,DeferredBrowserMetrics}; do
+  [ -d "$d" ] && find "$d" -type f -mmin +10 -delete 2>/dev/null || true
+done
+
 branch="$(git_ rev-parse --abbrev-ref HEAD)"
 if [ "$branch" != main ]; then echo "Op branch '$branch', niet main: niets bijgewerkt."; exit 0; fi
 if [ -n "$(git_ status --porcelain --untracked-files=no)" ]; then
