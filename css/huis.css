@@ -119,6 +119,9 @@
 .transfer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .transfer.paid .money{text-decoration:line-through;color:var(--muted);}
 .duit-h{font-family:var(--display);font-weight:600;font-size:1.1rem;margin:24px 0 10px;}
+.past{margin-top:8px;border-left:3px solid var(--panel-2);padding-left:10px;}
+.past-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0;}
+.past-row+.past-row{border-top:1px solid var(--panel-2);}
 .page-inner .card+.card{margin-top:12px;}
 
 /* ---------- statistieken ---------- */

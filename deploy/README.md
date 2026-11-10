@@ -95,10 +95,41 @@ Nieuwe tabellen of velden komen in `pb_migrations/` en worden bij de herstart va
 
 ## Back-ups
 
-PocketBase maakt elke nacht om 03:00 een back-up in `/opt/bosboom/pb_data/backups`
-en bewaart de laatste 7. Die staan op dezelfde SD-kaart: kopieer ze af en toe naar een
-andere plek, of stel in het beheerscherm (Settings > Backups) S3-opslag in.
-Terugzetten kan in hetzelfde scherm.
+PocketBase maakt elke nacht om 03:00 een back-up (een zip van alle data: DeeldeDuit, agenda, alles)
+en bewaart de laatste 30. Standaard staan die in `/opt/bosboom/pb_data/backups`, dus op dezelfde
+SD-kaart als de app. Gaat de kaart kapot, dan ben je ze ook kwijt. Zet ze daarom in Backblaze B2
+(gratis tot 10 GB, geen betaalkaart nodig). Dit is eenmalig:
+
+1. **Account:** maak een gratis account op https://www.backblaze.com/sign-up/cloud-storage
+   (kies regio *EU Central*).
+2. **Bucket:** B2 Cloud Storage > Buckets > *Create a Bucket*.
+   - Bucket Unique Name: bv. `bosboom-backups-<iets-willekeurigs>`
+   - Files in Bucket are: **Private**
+   - Default Encryption: **Enable**
+   - Daarna bij de bucket > *Lifecycle Settings* > **Keep only the last version of the file**
+     (anders blijven door PocketBase weggegooide back-ups verborgen bestaan en tellen ze mee).
+   - Noteer het **Endpoint** dat bij de bucket staat, bv. `s3.eu-central-003.backblazeb2.com`.
+3. **Sleutel:** Application Keys > *Add a New Application Key*.
+   - Name: `bosboom-pi`, Allow access to Bucket(s): **alleen je nieuwe bucket**, Type of Access: **Read and Write**.
+   - Je ziet de **keyID** en **applicationKey** maar één keer: plak ze meteen in stap 4.
+4. **PocketBase:** beheerscherm (`http://<pi-ip>:8090/_/`) > Settings > Backups > tandwiel
+   (Backups options) > zet **Store backups in S3 storage** aan:
+   - Endpoint: `https://s3.eu-central-003.backblazeb2.com` (jouw endpoint, met `https://`)
+   - Bucket: de bucketnaam uit stap 2
+   - Region: het middelste stuk van het endpoint, bv. `eu-central-003`
+   - Access key: de keyID, Secret: de applicationKey
+   - Force path-style addressing: uit
+   - *Test connection*, dan *Save changes*.
+5. **Controleren:** Settings > Backups > *Initialize new backup*. Na een paar seconden staat hij
+   in de lijst én in je bucket op backblaze.com.
+
+Vanaf dan gaan de nachtelijke back-ups alleen nog naar B2, niet meer naar de SD-kaart.
+Terugzetten: Settings > Backups, bij een back-up *Restore*. Is de Pi of de kaart helemaal
+weg: zet de Pi opnieuw op (zie boven), vul stap 4 opnieuw in en kies *Restore*.
+De sleutel staat alleen in PocketBase, nooit in deze repo.
+
+Wil je de betalingen zelf bekijken of bewaren: DeeldeDuit > onderaan **Alles downloaden (CSV)**
+(op je telefoon, niet op de kiosk) geeft elke uitgave met wie meededen en wanneer afgerekend.
 
 ## Wachtwoord vergeten
 
