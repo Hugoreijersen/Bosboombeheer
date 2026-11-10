@@ -1,7 +1,7 @@
-// De Bosboom — de menubalk onderin: Huis, Praktisch, DeeldeDuit, Statistieken.
+// De Bosboom — de menubalk onderin: Huis, Praktisch, DeeldeDuit, Statistieken (en Radio, alleen op het huisaccount).
 // Een module kan tabHooks[naam] zetten: die draait elke keer dat het tabblad opengaat.
 const tabHooks={};
-const TABS=["huis","praktisch","duit","stats"];
+const TABS=["huis","praktisch","duit","stats","radio"];
 function showTab(name){
   if(!TABS.includes(name))name="huis";
   document.querySelectorAll(".view").forEach(v=>v.hidden=v.dataset.view!==name);

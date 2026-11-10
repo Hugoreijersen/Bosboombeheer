@@ -76,6 +76,8 @@ this prototype. Don't copy code or decisions between them unless Hugo asks.
 - **Agenda** (kring claims the house; huisavond/activiteit are open), **Dibs**, **Streeplijst**,
   **DeeldeDuit**, **Statistieken**, **Schoonmaak** (fixed tasks; "Klaar" passes to the next person),
   **Boodschappen, Recepten, Quotes**. The rules are in `README.md` under "Huisregels".
+- **Radio** (`js/radio.js`): internet radio stations in a fifth tab, shown only on the huisaccount. One `<audio>`
+  element in the kiosk browser; the Pi sends it to its default output (a Bluetooth speaker, paired by hand).
 - Week starts on **Sunday**. Seasons and weather (Open-Meteo) in the header.
 - UI: Dutch text, no subtitles under headings, whole tiles are hit targets, big tap targets.
 
