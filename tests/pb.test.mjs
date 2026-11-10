@@ -102,7 +102,13 @@ try {
   await iep.update("shopping", { id: s.id }, { done: true });
   await iep.remove("shopping", { id: s.id });
   ok("boodschap weg", (await iep.list("shopping")).length, 0);
-  ok("chore_log", (await iep.insert("chore_log", { chore_id: "wc", task: "WC", done_by: "eik", done_at: "2026-11-04" })).done_by, "eik");
+  // schoonmaak "Klaar": altijd op eigen naam en vandaag; het huisaccount telt voor wie aan de beurt is
+  const cl = await iep.insert("chore_log", { chore_id: "wc", task: "WC", done_by: "eik", done_at: "2026-11-04" });
+  ok("chore_log op eigen naam", [cl.done_by, cl.done_at === "2026-11-04"], ["iep", false]);
+  await iep.update("chores", { id: "wc" }, { who: "Berk" });
+  ok("chore_log huis = wie aan de beurt is", (await huis.insert("chore_log", { chore_id: "wc", task: "WC", done_by: "eik" })).done_by, "berk");
+  ok("chore_log zonder boom", await code(zonder.insert("chore_log", { chore_id: "wc", task: "WC", done_by: "eik" })), "geen_boom");
+  ok("chore_log geschiedenis", (await berk.list("chore_log", { order: ["done_at", "created_at"], desc: true, limit: 60 })).map((l) => l.done_by), ["berk", "iep"]);
   ok("chore_log niet wissen", await code(iep.remove("chore_log", { chore_id: "wc" })), "geen_toegang");
 
   // ---------- agenda ----------

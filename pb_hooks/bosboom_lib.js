@@ -49,6 +49,15 @@ function myName(app, authId) {
 // Een gewone gebruiker (geen beheerder in het PocketBase-dashboard)?
 const isUser = (e) => !!(e.auth && e.auth.collection().name === "users");
 
+// Wie is er volgens het rooster aan de beurt voor deze taak (bewoner-id, of leeg).
+function turnOf(app, choreId) {
+  try {
+    const who = app.findRecordById("chores", choreId).getString("who");
+    const r = app.findFirstRecordByFilter("residents", "name = {:n}", { n: who });
+    return r.id;
+  } catch (_) { return ""; }
+}
+
 const plain = (rec, fields) => { const o = { id: rec.id }; fields.forEach((f) => (o[f] = rec.getString(f))); return o; };
 
 function overlapping(app, collection, extraFilter, rec, params) {
@@ -81,7 +90,18 @@ function requestDefaults(e) {
       if (blank("kind")) rec.set("kind", "betaald");
       if (blank("spent_on")) rec.set("spent_on", today());
       break;
-    case "chore_log": if (blank("done_at")) rec.set("done_at", today()); break;
+    case "chore_log":
+      if (blank("done_at")) rec.set("done_at", today());
+      // "Klaar" staat altijd op naam van wie ingelogd is, op de dag van vandaag. Het huisaccount
+      // (gedeeld scherm) is van niemand: dan telt het voor wie er volgens het rooster aan de beurt was.
+      if (isUser(e)) {
+        rec.set("done_at", today());
+        let by = myResident(e.app, authId);
+        if (!by && myName(e.app, authId) === HUIS) by = turnOf(e.app, rec.getString("chore_id"));
+        if (!by) fail("geen_boom");
+        rec.set("done_by", by);
+      }
+      break;
     case "residents": if (!("is_home" in body)) rec.set("is_home", true); break;
     case "turf_marks": rec.set("settlement_id", ""); break;   // een nieuwe streep is altijd open
     case "day_notes":

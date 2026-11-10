@@ -33,6 +33,7 @@ const state={
   recipes:[],
   quotes:[],
   plans:{},
+  choreLog:[],   // wie deed wat (nieuwste eerst), voor de geschiedenis bij schoonmaak
 };
 let myResidentId=null;  // welke boom ben ik (na inloggen)
 let isHuis=false;       // ingelogd met het huisaccount (gedeeld scherm, van niemand)

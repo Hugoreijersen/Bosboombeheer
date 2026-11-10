@@ -268,3 +268,10 @@ header{position:relative;}
 .edit-row .txt{flex:2;min-width:120px;}
 .edit-row .txt+.txt{flex:1;min-width:90px;}
 .ed-foot .note.editing{display:block;}
+/* schoonmaak: geschiedenis */
+.chist{padding:4px 16px 12px;}
+.chist-row{display:flex;gap:10px;align-items:baseline;font-size:.85rem;padding:6px 0;}
+.chist-row+.chist-row{border-top:1px solid var(--line);}
+.chist-d{color:var(--muted);min-width:64px;flex:none;}
+.chist-t{flex:1;min-width:0;}
+.chist-by{display:flex;align-items:center;gap:6px;font-weight:700;flex:none;}

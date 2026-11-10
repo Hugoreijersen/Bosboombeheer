@@ -71,6 +71,9 @@ uitgave in DeeldeDuit, verdeeld over wie meeeet (gasten tellen bij wie ze meenam
 - **DeeldeDuit:** alles in hele centen; de overgebleven centen gaan naar de grootste rest,
   zodat elk scherm precies hetzelfde rekent. Afrekenen maakt zo min mogelijk overboekingen.
   Afgerekende uitgaven zijn alleen-lezen; terugdraaien kan zolang er niets betaald is.
+- **Schoonmaak:** "Klaar" staat altijd op naam van wie ingelogd is, met de datum van vandaag
+  (de server zet beide). Daarna is de volgende na jou aan de beurt. Op het huisaccount telt
+  "Klaar" voor wie er aan de beurt was. Onder het rooster staat de geschiedenis (laatste 30).
 - **Opmerkingen bij het eten:** staan altijd op de naam van wie ingelogd is (de server zet
   de naam, wat de app ook stuurt). Alleen je eigen opmerking kun je bewerken. Quotes,
   boodschappen en recepten kan iedereen bewerken (✎).
