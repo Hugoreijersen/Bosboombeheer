@@ -79,6 +79,7 @@ const ERR={
   spotify_geen_speaker:"Spotify ziet die speaker nu niet. Start hem één keer vanuit de Spotify-app.",
   spotify_premium:"Hiervoor is Spotify Premium nodig.",spotify_te_druk:"Spotify heeft het even te druk. Probeer het zo nog eens.",
   spotify_client_id:"Dat Client ID klopt niet.",spotify_onbereikbaar:"Spotify reageert nu niet.",
+  podcast_onbekend:"Die podcast kent de app niet.",podcast_onbereikbaar:"De podcast laadt nu niet. Probeer het zo nog eens.",
   niet_jouw_opmerking:"Je kunt alleen je eigen opmerkingen bewerken.",geen_boom:"Kies eerst je boom.",
 };
 const errText=e=>ERR[e&&e.code]||("Er ging iets mis: "+((e&&e.message)||e));

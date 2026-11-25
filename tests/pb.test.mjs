@@ -30,6 +30,19 @@ const spotSrv = http.createServer((req, res) => {
       if (f.get("grant_type") === "refresh_token" && f.get("refresh_token") !== "ververs-1") return send(400, { error: "invalid_grant" });
       return send(200, { access_token: "toegang-" + ++spot.tokens, refresh_token: "ververs-1", expires_in: 3600 });
     }
+    // Nep-podcastfeed (zoals podcast.npo.nl, met de dubbele &amp;amp; in de mp3-link)
+    if (u.pathname.startsWith("/feed/")) {
+      spot.feeds = (spot.feeds || 0) + 1;
+      if (u.pathname !== "/feed/sven-op-1.xml") { res.writeHead(404); return res.end(); }
+      res.writeHead(200, { "Content-Type": "application/xml" });
+      return res.end(`<?xml version="1.0"?><rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"><channel><title>Sven op 1</title>
+<item><title><![CDATA[Gast: 'iets' & meer]]></title><pubDate>Wed, 25 Nov 2026 12:37:00 +0100</pubDate>
+<enclosure url="https://podcast.npo.nl/file/sven-op-1/1/a.mp3?awCollectionid=x&amp;amp;awEpisodeid=y" length="1" type="audio/mpeg"/><itunes:duration>00:24:27</itunes:duration></item>
+<item><title>Zonder audio</title></item>
+<item><title>Oud</title><pubDate>Tue, 24 Nov 2026 11:31:00 +0100</pubDate><enclosure url="javascript:alert(1)" type="audio/mpeg"/></item>
+<item><itunes:title>Tweede</itunes:title><title>x</title><enclosure length="2" url="http://e/b.mp3"/><itunes:duration>1500</itunes:duration></item>
+</channel></rss>`);
+    }
     const tok = (req.headers.authorization || "").replace("Bearer ", "");
     if (tok !== "toegang-" + spot.tokens || spot.expireNext) { spot.expireNext = false; spot.tokens++; return send(401, { error: { status: 401, message: "expired" } }); }
     spot.calls.push(req.method + " " + u.pathname + u.search + (body ? " " + body : ""));
@@ -47,7 +60,7 @@ const SPOT_URL = `http://127.0.0.1:${spotSrv.address().port}`;
 
 const pbProc = spawn(BIN, ["serve", `--http=127.0.0.1:${PORT}`, `--dir=${dir}`,
   `--migrationsDir=${ROOT}pb_migrations`, `--hooksDir=${ROOT}pb_hooks`, `--publicDir=${ROOT}`], { stdio: ["ignore", "pipe", "pipe"],
-  env: Object.assign({}, process.env, { SPOTIFY_ACCOUNTS_URL: SPOT_URL, SPOTIFY_API_URL: SPOT_URL }) });
+  env: Object.assign({}, process.env, { SPOTIFY_ACCOUNTS_URL: SPOT_URL, SPOTIFY_API_URL: SPOT_URL, PODCAST_FEED_URL: SPOT_URL }) });
 let log = "";
 pbProc.stdout.on("data", (d) => (log += d));
 pbProc.stderr.on("data", (d) => (log += d));
@@ -267,6 +280,18 @@ try {
     await sp.call("spotify/disconnect", {});
     ok("spotify: ontkoppeld", (await sp.call("spotify/state", {})).connected, false);
   }
+
+  // ---------- podcasts in het Radio-tabblad (alleen het huisaccount) ----------
+  ok("podcast: bewoner mag niet", await code(iep.call("podcast/sven-op-1", {})), "geen_toegang");
+  ok("podcast: onbekende feed", await code(huis.call("podcast/elders", {})), "podcast_onbekend");
+  const pod = await huis.call("podcast/sven-op-1", {});
+  ok("podcast: afleveringen", [pod.title, pod.episodes.map((e) => [e.title, e.date, e.url, e.min])], ["Sven op 1", [
+    ["Gast: 'iets' & meer", "2026-11-25T11:37:00.000Z", "https://podcast.npo.nl/file/sven-op-1/1/a.mp3?awCollectionid=x&awEpisodeid=y", 24],
+    ["Tweede", "", "http://e/b.mp3", 25]]]);
+  const feedsBefore = spot.feeds;
+  await huis.call("podcast/sven-op-1", {});
+  ok("podcast: even onthouden", spot.feeds, feedsBefore);
+  ok("podcast: feed weg", await code(huis.call("podcast/oog-op-morgen", {})), "podcast_onbereikbaar");
 
   // ---------- de app zelf wordt geserveerd ----------
   ok("index.html", (await fetch(URL_ + "/")).status, 200);
