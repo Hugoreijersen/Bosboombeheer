@@ -8,6 +8,13 @@ const radio=(()=>{
     {id:"radio1",name:"NPO Radio 1",url:"https://icecast.omroep.nl/radio1-bb-mp3"},
     {id:"bnr",name:"BNR Nieuwsradio",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/BNR_NIEUWSRADIOAAC.aac"},
   ];
+  const CHRISTIAN=[
+    {id:"gnr",name:"Groot Nieuws Radio",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/GNR.mp3"},
+    {id:"gnr-nonstop",name:"GNR Non-stop",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/GNRNONSTOP.mp3"},
+    {id:"gnr-bk",name:"GNR Blijde Klanken",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/GNRBK.mp3"},
+    {id:"sevenfm",name:"Seven FM",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/SEVENFM.mp3"},
+    {id:"brightfm",name:"Bright FM",url:"https://s1.hollanddata.eu/proxy/bright1?mp=/bfm-mp3"},
+  ];
   const MUSIC=[
     {id:"radio2",name:"NPO Radio 2",url:"https://icecast.omroep.nl/radio2-bb-mp3"},
     {id:"3fm",name:"NPO 3FM",url:"https://icecast.omroep.nl/3fm-bb-mp3"},
@@ -21,7 +28,7 @@ const radio=(()=>{
     {id:"veronica",name:"Veronica",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/VERONICA.mp3"},
     {id:"100nl",name:"100% NL",url:"https://stream.100p.nl/100pctnl.mp3"},
   ];
-  const STATIONS=TALK.concat(MUSIC);
+  const STATIONS=TALK.concat(CHRISTIAN,MUSIC);
   // Dezelfde id's als in pb_hooks/podcast_lib.js (FEEDS).
   const PODCASTS=[
     {id:"sven-op-1",name:"Sven op 1"},
@@ -159,6 +166,7 @@ const radio=(()=>{
       </div>
       <h3 class="radio-h">Praatradio</h3>${tiles(TALK)}
       <h3 class="radio-h">Podcasts</h3>${pods}
+      <h3 class="radio-h">Christelijk</h3>${tiles(CHRISTIAN)}
       <h3 class="radio-h">Muziek</h3>${tiles(MUSIC)}`;
     host.querySelector("[data-stop]").addEventListener("click",stop);
     host.querySelectorAll("[data-vol]").forEach(b=>b.addEventListener("click",()=>setVol(STEP*Number(b.dataset.vol))));
