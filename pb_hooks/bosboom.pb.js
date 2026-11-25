@@ -50,3 +50,9 @@ routerAdd("POST", "/api/bosboom/{name}", (e) => {
 routerAdd("POST", "/api/bosboom/spotify/{name}", (e) => {
   return e.json(200, require(`${__hooks}/spotify_lib.js`).call(e));
 }, $apis.requireAuth("users"));
+
+// Podcasts in het Radio-tabblad (alleen het huisaccount): POST /api/bosboom/podcast/{id}
+// De Pi haalt de RSS-feed op, want de browser mag dat niet zelf (CORS).
+routerAdd("POST", "/api/bosboom/podcast/{id}", (e) => {
+  return e.json(200, require(`${__hooks}/podcast_lib.js`).call(e));
+}, $apis.requireAuth("users"));
